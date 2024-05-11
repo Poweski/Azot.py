@@ -2,12 +2,16 @@ from django.core import serializers
 from django.db import IntegrityError
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError, NotAuthenticated
+from rest_framework.exceptions import ValidationError, NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from apps.serializers import (ClientInSerializer, ClientOutSerializer, SellerInSerializer, SellerOutSerializer,
-                              ProductInSerializer, ProductOutSerializer, SellerInfoInSerializer, SellerInfoOutSerializer,
-                              ClientInfoInSerializer, ClientInfoOutSerializer, SellerOutWithInfoSerializer, ClientOutWithInfoSerializer)
+from apps.serializers.tojson.client_serializers import ClientOutSerializer, ClientOutWithInfoSerializer
+from apps.serializers.tojson.product_serializers import ProductOutSerializer
+from apps.serializers.fromjson.product_serializers import ProductInSerializer
+from apps.serializers.fromjson.client_serializers import ClientInSerializer, ClientInfoInSerializer
+from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer
+from apps.serializers.fromjson.seller_serializers import SellerInSerializer, SellerInfoInSerializer
+
 
 from apps.models import Client, Seller, Product
 
