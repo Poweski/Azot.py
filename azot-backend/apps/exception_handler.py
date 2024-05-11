@@ -23,6 +23,7 @@ def custom_exception_handler(exc, context):
             'IntegrityError': _handler_integrity_error,
             'ValidationError': _handler_validation_error,
             'DoesNotExist': _handler_not_found,
+            'PurchaseError': _handler_purchase_error,
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
@@ -63,3 +64,6 @@ def _handler_not_found(exc, context, res):
         return "Seller not found", 400
     else:
         return "Not found", 400
+
+def _handler_purchase_error(exc, context, res):
+    return "Transaction failed.", 400
