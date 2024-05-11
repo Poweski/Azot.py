@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'apps',
 ]
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "apps.exception_handler.custom_exception_handler"
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
