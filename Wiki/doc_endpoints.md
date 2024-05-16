@@ -81,7 +81,9 @@ response:
     "name": "string",
     "price": "float",
     "description": "string",
-    "image": "string"
+    "image": "string",
+    "tags": "string",
+    "items_available": "int"
 }
 ```
 response:
@@ -101,7 +103,9 @@ response:
       "name": "string",
       "price": "float",
       "description": "string",
-      "image": "string"
+      "image": "string",
+      "tags": "string",
+      "items_available": "int"
     }
   ]
 }

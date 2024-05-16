@@ -11,7 +11,3 @@
 - Clients can remove products from their cart
 - Clients can buy products from their cart
 
-## Products
-- add tags to products
-- add number of products available
-
