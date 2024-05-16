@@ -1,3 +1,5 @@
+import uuid
+
 from django.core import serializers
 from django.db import IntegrityError
 from django.http import JsonResponse
@@ -11,9 +13,10 @@ from apps.serializers.fromjson.product_serializers import ProductInSerializer
 from apps.serializers.fromjson.client_serializers import ClientInSerializer, ClientInfoInSerializer
 from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer
 from apps.serializers.fromjson.seller_serializers import SellerInSerializer, SellerInfoInSerializer
+from apps.serializers.fromjson.client_cart_serializer import ClientCartSerizlizer
 
 
-from apps.models import Client, Seller, Product
+from apps.models import Client, Seller, Product, Purchase, Cart
 
 from apps.exceptions import PurchaseError
 
@@ -68,16 +71,28 @@ class GetProductsView(APIView):
         products = Product.objects.all()
         return Response({'content': ProductOutSerializer(products, many=True).data}, status=status.HTTP_200_OK)
 
-class ClientBuyProductView(APIView):
-    def post(self, request, client_id, product_id):
+class ClientBuyChartView(APIView):
+    def post(self, request, client_id):
         client = Client.objects.get(id=client_id)
-        product = Product.objects.get(id=product_id)
-        if client.client_info.balance < product.price:
-            raise PurchaseError()
-        client.client_info.balance -= product.price
-        client.client_info.save()
-        product.delete()
+        cart = client.cart
+        # chart.is_valid(raise_exception=True)
+        # for product_id, quantity in chart.validated_data['orders']:
+        #     product = Product.objects.get(id=product_id)
+        #     if client.client_info.balance < product.price * quantity:
+        #         raise PurchaseError()
+        #     if product.items_available < quantity:
+        #         raise PurchaseError()
+        #     client.client_info.balance -= product.price * quantity
+        #     client.client_info.save()
+        #     product.items_available -= quantity
+        #     product.save()
+        #    Purchase.objects.create(id=uuid.uuid4(), client=client, product=product, quantity=quantity, cost=product.price * quantity)
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+    # def get(self, request, client_id):
+    #     client = Client.objects.get(id=client_id)
+    #     chart
+    #     return Response({'content': }, status=status.HTTP_200_OK)
 
 class ClientChangeInfoView(APIView):
     def post(self, request, client_id):
@@ -112,5 +127,6 @@ class ClientAddBalanceView(APIView):
         client.client_info.balance += request.data['balance']
         client.client_info.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
 
 
