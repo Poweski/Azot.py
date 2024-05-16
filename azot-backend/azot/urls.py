@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from apps.views import (ClientRegisterView, ClientLoginView, SellerRegisterView, SellerLoginView,
-                        SellerAddProductView, GetProductsView, ClientBuyProductView, ClientAddBalanceView, ClientChangeInfoView,
+                        SellerAddProductView, GetProductsView, ClientCartView, ClientAddBalanceView, ClientChangeInfoView,
                         SellerChangeInfoView)
 
 
@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/client/login', ClientLoginView.as_view()),
     path('api/seller/<str:seller_id>/product', SellerAddProductView.as_view()),
     path('api/product', GetProductsView.as_view()),
-    path('api/client/<str:client_id>/product/<str:product_id>', ClientBuyProductView.as_view()),
+    path('api/client/<str:client_id>/product', ClientCartView.as_view()),
     path('api/client/<str:client_id>/balance', ClientAddBalanceView.as_view()),
     path('api/client/<str:client_id>', ClientChangeInfoView.as_view()),
     path('api/seller/<str:seller_id>', SellerChangeInfoView.as_view()),

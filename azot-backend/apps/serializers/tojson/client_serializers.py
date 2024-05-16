@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
 
 
 class ClientOutSerializer(serializers.Serializer):
@@ -51,15 +52,21 @@ class ClientOutWithInfoSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     email = serializers.EmailField()
     client_info = ClientInfoOutSerializer()
+    cart = CartOutSerializer()
+
 
     def to_representation(self, instance):
         return {
+            'id': instance.id,
             'email': instance.email,
             'client_info': ClientInfoOutSerializer().to_representation(instance.client_info),
+            'cart': CartOutSerializer().to_representation(instance.cart),
         }
 
     def to_internal_value(self, data):
         return {
+            'id': data.get('id'),
             'email': data.get('email'),
             'client_info': ClientInfoOutSerializer().to_internal_value(data.get('client_info')),
+            'cart': CartOutSerializer().to_internal_value(data.get('cart')),
         }

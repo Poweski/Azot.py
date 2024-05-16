@@ -9,7 +9,7 @@ class Client(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     client_info = models.ForeignKey('ClientInfo', on_delete=models.CASCADE, null=True, blank=True)
-    cart = models.ForeignKey('Cart', on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey('Cart', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.email
@@ -54,18 +54,18 @@ class Product(models.Model):
     items_available = models.IntegerField()
     tags = models.CharField(max_length=100)
 
-    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
 class Purchase(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2)
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.id
@@ -74,13 +74,15 @@ class Order(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.id
 
 class Cart(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
-    orders = models.ForeignKey(Order, on_delete=models.CASCADE)
+
+
 
     def __str__(self):
         return self.id

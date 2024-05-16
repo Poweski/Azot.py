@@ -17,13 +17,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class ClientCartSerializer(serializers.ModelSerializer):
     orders = OrderSerializer(many=True)
 
-    def create(self, validated_data, *args, **kwargs):
-        return Cart.objects.create(id=uuid.uuid4(),
-                                   client=args[0],
-                                   orders=validated_data.get('orders'))
-
     def update(self, instance, validated_data, *args, **kwargs):
-        instance.id = uuid.uuid4()
         instance.orders = validated_data.get('orders')
         instance.save()
         return instance

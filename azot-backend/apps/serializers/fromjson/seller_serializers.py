@@ -11,7 +11,7 @@ class SellerInSerializer(serializers.Serializer):
         return Seller.objects.create(id=uuid.uuid4(),
                                      email=validated_data.get('email'),
                                      password=validated_data.get('password'),
-                                     seller_info=SellerInfo.objects.create()
+                                     seller_info=SellerInfo.objects.create(),
                                      )
 
     def update(self, instance, validated_data):

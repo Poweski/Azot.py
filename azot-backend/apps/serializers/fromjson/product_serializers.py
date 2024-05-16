@@ -20,7 +20,7 @@ class ProductInSerializer(serializers.Serializer):
                                       image=validated_data.get('image'),
                                       items_available=validated_data.get('items_available'),
                                       tags=validated_data.get('tags'),
-                                      seller=args[0])
+                                      owner=args[0])
 
     def update(self, instance, validated_data, *args, **kwargs):
         instance.id = uuid.uuid4()
@@ -30,7 +30,6 @@ class ProductInSerializer(serializers.Serializer):
         instance.image = validated_data.get('image', instance.image)
         instance.items_available = validated_data.get('items_available', instance.items_available)
         instance.tags = validated_data.get('tags', instance.tags)
-        seller = args[0]
-        instance.seller = seller
+        instance.owner = args[0]
         instance.save()
         return instance
