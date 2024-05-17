@@ -13,11 +13,10 @@ class ClientInSerializer(serializers.Serializer):
                                      email=validated_data.get('email'),
                                      password=validated_data.get('password'),
                                      client_info=ClientInfo.objects.create(),
-                                     cart=Cart.objects.create()
+                                     cart=Cart.objects.create(id=uuid.uuid4())
                                      )
 
     def update(self, instance, validated_data):
-        instance.id = uuid.uuid4()
         instance.email = validated_data.get('email', instance.email)
         instance.password = validated_data.get('password', instance.password)
         instance.save()

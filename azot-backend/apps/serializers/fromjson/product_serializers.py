@@ -23,7 +23,6 @@ class ProductInSerializer(serializers.Serializer):
                                       owner=args[0])
 
     def update(self, instance, validated_data, *args, **kwargs):
-        instance.id = uuid.uuid4()
         instance.name = validated_data.get('name', instance.name)
         instance.price = validated_data.get('price', instance.price)
         instance.description = validated_data.get('description', instance.description)

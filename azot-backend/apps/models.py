@@ -9,7 +9,7 @@ class Client(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     client_info = models.ForeignKey('ClientInfo', on_delete=models.CASCADE, null=True, blank=True)
-    client = models.ForeignKey('Cart', on_delete=models.CASCADE)
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.email
@@ -58,6 +58,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
 
 class Purchase(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)

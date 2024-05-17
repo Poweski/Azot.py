@@ -14,10 +14,11 @@ class OrderSerializer(serializers.ModelSerializer):
                                     quantity=validated_data.get('quantity'))
 
 
-class ClientCartSerializer(serializers.ModelSerializer):
-    orders = OrderSerializer(many=True)
+# class ClientCartSerializer(serializers.ModelSerializer):
+#      # orders = OrderSerializer()
+#     #
+#     # def update(self, instance, validated_data, *args, **kwargs):
+#     #     validated_data.get('orders')
+#     #     instance.save()
+#     #     return instance
 
-    def update(self, instance, validated_data, *args, **kwargs):
-        instance.orders = validated_data.get('orders')
-        instance.save()
-        return instance

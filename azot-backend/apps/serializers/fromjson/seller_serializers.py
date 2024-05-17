@@ -15,7 +15,6 @@ class SellerInSerializer(serializers.Serializer):
                                      )
 
     def update(self, instance, validated_data):
-        instance.id = uuid.uuid4()
         instance.email = validated_data.get('email', instance.email)
         instance.password = validated_data.get('password', instance.password)
         instance.save()

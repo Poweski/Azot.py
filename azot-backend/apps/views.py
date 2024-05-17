@@ -10,11 +10,11 @@ from apps.serializers.fromjson.product_serializers import ProductInSerializer
 from apps.serializers.fromjson.client_serializers import ClientInSerializer, ClientInfoInSerializer
 from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer
 from apps.serializers.fromjson.seller_serializers import SellerInSerializer, SellerInfoInSerializer
-from apps.serializers.fromjson.client_cart_serializer import ClientCartSerializer
 
 
 
-from apps.models import Client, Seller, Product, Purchase, Cart
+
+from apps.models import Client, Seller, Product, Purchase, Cart, Order
 
 from apps.exceptions import PurchaseError
 
@@ -74,9 +74,12 @@ class GetProductsView(APIView):
 class ClientCartView(APIView):
     def put(self, request, client_id):
         client = Client.objects.get(id=client_id)
-        cart = ClientCartSerializer(data=request.data)
-        cart.is_valid(raise_exception=True)
-        cart.update(client.cart, cart.validated_data)
+        orders = request.data['orders']
+        cart = client.cart
+        for order in orders:
+            product = Product.objects.get(id=order['product'])
+            Order.objects.create(id=uuid.uuid4(), product=product, quantity=order['quantity'], cart = cart)
+
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
     def post(self, request, client_id):
@@ -94,10 +97,10 @@ class ClientCartView(APIView):
             order.product.items_available -= order.quantity
             order.product.save()
 
+            order.delete()
+
             Purchase.objects.create(id=uuid.uuid4(), seller=order.product.owner, product=order.product, quantity=order.quantity, cost=order.product.price * order.quantity)
 
-        cart.orders = None
-        cart.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 
@@ -109,6 +112,10 @@ class ClientChangeInfoView(APIView):
         client_info.is_valid(raise_exception=True)
         client.client_info = client_info.update(client.client_info, client_info.validated_data)
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+    def get(self, request, client_id):
+        client = Client.objects.get(id=client_id)
+        return Response({'content': ClientOutWithInfoSerializer(client).data}, status=status.HTTP_200_OK)
 
 class SellerChangeInfoView(APIView):
     def put(self, request, seller_id):
@@ -132,5 +139,46 @@ class ClientAddBalanceView(APIView):
         client.client_info.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
+class SellerProductView(APIView):
+    def put(self, request, seller_id, product_id):
+        seller = Seller.objects.get(id=seller_id)
+        product = Product.objects.get(id=product_id)
+
+        if product.owner != seller:
+            raise NotAuthenticated()
+
+        product_serializer = ProductInSerializer(data=request.data)
+        product_serializer.is_valid(raise_exception=True)
+        product_serializer.update(product, product_serializer.validated_data, seller)
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+    def delete(self, request, seller_id, product_id):
+        seller = Seller.objects.get(id=seller_id)
+        product = Product.objects.get(id=product_id)
+
+        if product.owner != seller:
+            raise NotAuthenticated()
+
+        product.delete()
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+
+class ClientBuyProductView(APIView):
+    def post(self, request, client_id, product_id):
+        client = Client.objects.get(id=client_id)
+        product = Product.objects.get(id=product_id)
+        if client.client_info.balance < product.price:
+            raise PurchaseError()
+        if product.items_available < 1:
+            raise PurchaseError()
+        client.client_info.balance -= product.price
+        client.client_info.save()
+
+        product.items_available -= 1
+        product.save()
+
+        Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product=product, quantity=1, cost=product.price)
+
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 

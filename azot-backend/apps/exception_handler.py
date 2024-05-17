@@ -19,11 +19,11 @@ def custom_exception_handler(exc, context):
     try:
         exception_class = exc.__class__.__name__
         handlers = {
-            'NotAuthenticated': _handler_authentication_error,
-            'IntegrityError': _handler_integrity_error,
-            'ValidationError': _handler_validation_error,
-            'DoesNotExist': _handler_not_found,
-            'PurchaseError': _handler_purchase_error,
+            # 'NotAuthenticated': _handler_authentication_error,
+            # 'IntegrityError': _handler_integrity_error,
+            # 'ValidationError': _handler_validation_error,
+            # 'DoesNotExist': _handler_not_found,
+            # 'PurchaseError': _handler_purchase_error,
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
