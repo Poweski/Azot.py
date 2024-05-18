@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
+from apps.serializers.tojson.seller_serializers import PurchaseSerializer
 
 
 class ClientOutSerializer(serializers.Serializer):
@@ -61,6 +62,7 @@ class ClientOutWithInfoSerializer(serializers.Serializer):
             'email': instance.email,
             'client_info': ClientInfoOutSerializer().to_representation(instance.client_info),
             'cart': CartOutSerializer().to_representation(instance.cart),
+            'purchases': PurchaseSerializer(instance.purchase_set.all(), many=True).data,
         }
 
     def to_internal_value(self, data):

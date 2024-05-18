@@ -16,7 +16,7 @@ from apps.serializers.fromjson.seller_serializers import SellerInSerializer, Sel
 
 from apps.models import Client, Seller, Product, Purchase, Cart, Order
 
-from apps.exceptions import PurchaseError
+from apps.exceptions import PurchaseError, PermissionDenied
 
 
 
@@ -97,9 +97,10 @@ class ClientCartView(APIView):
             order.product.items_available -= order.quantity
             order.product.save()
 
+            Purchase.objects.create(id=uuid.uuid4(), seller=order.product.owner, product_name=order.product.name, quantity=order.quantity, cost=order.product.price * order.quantity, client=client)
+
             order.delete()
 
-            Purchase.objects.create(id=uuid.uuid4(), seller=order.product.owner, product=order.product, quantity=order.quantity, cost=order.product.price * order.quantity)
 
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
@@ -145,7 +146,7 @@ class SellerProductView(APIView):
         product = Product.objects.get(id=product_id)
 
         if product.owner != seller:
-            raise NotAuthenticated()
+            raise PermissionDenied()
 
         product_serializer = ProductInSerializer(data=request.data)
         product_serializer.is_valid(raise_exception=True)
@@ -157,7 +158,7 @@ class SellerProductView(APIView):
         product = Product.objects.get(id=product_id)
 
         if product.owner != seller:
-            raise NotAuthenticated()
+            raise PermissionDenied()
 
         product.delete()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
@@ -177,7 +178,7 @@ class ClientBuyProductView(APIView):
         product.items_available -= 1
         product.save()
 
-        Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product=product, quantity=1, cost=product.price)
+        Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product_name=product.name, quantity=1, cost=product.price, client=client)
 
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 

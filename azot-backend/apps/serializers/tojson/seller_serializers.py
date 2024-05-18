@@ -101,7 +101,7 @@ class ProductOutSerializer(serializers.Serializer):
         }
 
 class PurchaseSerializer(serializers.ModelSerializer):
-    product = ProductOutSerializer()
+    product_name = serializers.CharField()
     quantity = serializers.IntegerField()
     date = serializers.DateTimeField()
     cost = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -109,7 +109,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return {
-            'product': ProductOutSerializer().to_representation(instance.product),
+            'product': instance.product_name,
             'quantity': instance.quantity,
             'date': instance.date,
             'cost': instance.cost,

@@ -8,8 +8,8 @@ class Client(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-    client_info = models.ForeignKey('ClientInfo', on_delete=models.CASCADE, null=True, blank=True)
-    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
+    client_info = models.OneToOneField('ClientInfo', on_delete=models.CASCADE, null=True, blank=True)
+    cart = models.OneToOneField('Cart', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.email
@@ -19,7 +19,7 @@ class Seller(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-    seller_info = models.ForeignKey('SellerInfo', on_delete=models.CASCADE, null=True, blank=True)
+    seller_info = models.OneToOneField('SellerInfo', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.email
@@ -63,11 +63,12 @@ class Product(models.Model):
 
 class Purchase(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2)
-    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    seller = models.ForeignKey(Seller, on_delete=models.SET_NULL, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.id
@@ -83,8 +84,6 @@ class Order(models.Model):
 
 class Cart(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
-
-
 
     def __str__(self):
         return self.id
