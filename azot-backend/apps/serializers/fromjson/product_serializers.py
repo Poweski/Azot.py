@@ -9,6 +9,8 @@ class ProductInSerializer(serializers.Serializer):
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     description = serializers.CharField()
     image = serializers.URLField()
+    items_available = serializers.IntegerField()
+    tags = serializers.CharField()
 
     def create(self, validated_data, *args, **kwargs):
         return Product.objects.create(id=uuid.uuid4(),
@@ -16,15 +18,17 @@ class ProductInSerializer(serializers.Serializer):
                                       price=validated_data.get('price'),
                                       description=validated_data.get('description'),
                                       image=validated_data.get('image'),
-                                      seller=args[0])
+                                      items_available=validated_data.get('items_available'),
+                                      tags=validated_data.get('tags'),
+                                      owner=args[0])
 
     def update(self, instance, validated_data, *args, **kwargs):
-        instance.id = uuid.uuid4()
         instance.name = validated_data.get('name', instance.name)
         instance.price = validated_data.get('price', instance.price)
         instance.description = validated_data.get('description', instance.description)
         instance.image = validated_data.get('image', instance.image)
-        seller = args[0]
-        instance.seller = seller
+        instance.items_available = validated_data.get('items_available', instance.items_available)
+        instance.tags = validated_data.get('tags', instance.tags)
+        instance.owner = args[0]
         instance.save()
         return instance

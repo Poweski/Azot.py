@@ -10,4 +10,5 @@
 - Clients can see the list of products in their cart
 - Clients can remove products from their cart
 - Clients can buy products from their cart
+- Clients can see history of bought products
 

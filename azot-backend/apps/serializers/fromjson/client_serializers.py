@@ -1,7 +1,7 @@
 import uuid
 
 from rest_framework import serializers
-from apps.models import Client, ClientInfo
+from apps.models import Client, ClientInfo, Cart
 
 
 class ClientInSerializer(serializers.Serializer):
@@ -12,11 +12,11 @@ class ClientInSerializer(serializers.Serializer):
         return Client.objects.create(id=uuid.uuid4(),
                                      email=validated_data.get('email'),
                                      password=validated_data.get('password'),
-                                     client_info=ClientInfo.objects.create()
+                                     client_info=ClientInfo.objects.create(),
+                                     cart=Cart.objects.create(id=uuid.uuid4())
                                      )
 
     def update(self, instance, validated_data):
-        instance.id = uuid.uuid4()
         instance.email = validated_data.get('email', instance.email)
         instance.password = validated_data.get('password', instance.password)
         instance.save()

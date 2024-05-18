@@ -49,9 +49,44 @@ response:
 ```json
 {
   "content": {
-    "email": "string",
-    "id": "string"
-  }
+        "id": "string",
+        "email": "string",
+        "seller_info": {
+            "organization": "string",
+            "phone": "string",
+            "address": "string"
+        },
+        "products": [
+            {
+                "id": "string",
+                "name": "string",
+                "price": 122.32,
+                "description": "string",
+                "image": "https://picsum.photos/id/237/200/300",
+                "owner": {
+                    "seller_info": {
+                        "organization": "string"
+                    }
+                },
+                "items_available": 5,
+                "tags": "string"
+            },
+            {
+            // another product
+            }
+        ],
+        "purchases": [
+            {
+                "product": "string",
+                "quantity": 2,
+                "date": "2024-05-18T09:23:59.862403Z",
+                "cost": 244.64
+            },
+            {
+            // another purchase
+            }
+        ]
+    }
 }
 ```
 - **POST** /api/client/login
@@ -68,9 +103,51 @@ response:
 ```json
 {
   "content": {
-    "email": "string",
-    "id": "string"
-  }
+        "id": "d4a83f44-a5f0-4c1e-9666-6febde8fbf9c",
+        "email": "test@example.com",
+        "client_info": {
+            "name": "string",
+            "surname": "string",
+            "phone": "string",
+            "address": "string",
+            "balance": 99388.4
+        },
+        "cart": {
+            "orders": [
+                {
+                    "quantity": 2,
+                    "product": {
+                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                        "name": "product23",
+                        "price": 122.32,
+                        "description": "description",
+                        "image": "https://picsum.photos/id/237/200/300",
+                        "owner": {
+                            "seller_info": {
+                                "organization": "string"
+                            }
+                        },
+                        "items_available": 3,
+                        "tags": "test"
+                    }
+                },
+                {
+                // another order
+                }
+            ]
+        },
+        "purchases": [
+            {
+                "product": "product23",
+                "quantity": 2,
+                "date": "2024-05-18T09:23:59.862403Z",
+                "cost": 244.64
+            },
+            {
+                // another purchase
+            }
+        ]
+    }
 }
 ```
 ## Add Product
@@ -99,13 +176,21 @@ response:
 {
   "content": [
     {
-      "id": "string",
-      "name": "string",
-      "price": "float",
-      "description": "string",
-      "image": "string",
-      "tags": "string",
-      "items_available": "int"
+      "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+      "name": "product23",
+      "price": 122.32,
+      "description": "description",
+      "image": "https://picsum.photos/id/237/200/300",
+      "owner": {
+        "seller_info": {
+          "organization": "string"
+        }
+      },
+      "items_available": 3,
+      "tags": "test"
+    },
+    {
+      // another product
     }
   ]
 }
@@ -115,7 +200,7 @@ response:
 <br> request:
 ```json
 {
-    /// empty for now
+    // empty
 }
 ```
 response:
@@ -139,7 +224,7 @@ response:
 }
 ```
 ## Change Info
-- **POST** /api/client/{client_id}
+- **PUT** /api/client/{client_id}
 <br> request:
 ```json
 {
@@ -160,17 +245,54 @@ response:
 ```json
 {
   "content": {
-    "name": "string",
-    "surname": "string",
-    "address": "string",
-    "phone": "string",
-    "balance": "float",
-    "email": "string",
-    "id": "string"
-  }
+        "id": "d4a83f44-a5f0-4c1e-9666-6febde8fbf9c",
+        "email": "test@example.com",
+        "client_info": {
+            "name": "string",
+            "surname": "string",
+            "phone": "string",
+            "address": "string",
+            "balance": 99388.4
+        },
+        "cart": {
+            "orders": [
+                {
+                    "quantity": 2,
+                    "product": {
+                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                        "name": "product23",
+                        "price": 122.32,
+                        "description": "description",
+                        "image": "https://picsum.photos/id/237/200/300",
+                        "owner": {
+                            "seller_info": {
+                                "organization": "string"
+                            }
+                        },
+                        "items_available": 3,
+                        "tags": "test"
+                    }
+                },
+                {
+                // another order
+                }
+            ]
+        },
+        "purchases": [
+            {
+                "product": "product23",
+                "quantity": 2,
+                "date": "2024-05-18T09:23:59.862403Z",
+                "cost": 244.64
+            },
+            {
+                // another purchase
+            }
+        ]
+    }
 }
 ```
-- **POST** /api/seller/{seller_id}
+- **PUT** /api/seller/{seller_id}
 <br> request:
 ```json
 {
@@ -190,11 +312,107 @@ response:
 ```json
 {
   "content": {
-    "organization": "string",
-    "address": "string",
-    "phone": "string",
-    "email": "string",
-    "id": "string"
-  }
+        "id": "string",
+        "email": "string",
+        "seller_info": {
+            "organization": "string",
+            "phone": "string",
+            "address": "string"
+        },
+        "products": [
+            {
+                "id": "string",
+                "name": "string",
+                "price": 122.32,
+                "description": "string",
+                "image": "https://picsum.photos/id/237/200/300",
+                "owner": {
+                    "seller_info": {
+                        "organization": "string"
+                    }
+                },
+                "items_available": 5,
+                "tags": "string"
+            },
+            {
+            // another product
+            }
+        ],
+        "purchases": [
+            {
+                "product": "string",
+                "quantity": 2,
+                "date": "2024-05-18T09:23:59.862403Z",
+                "cost": 244.64
+            },
+            {
+            // another purchase
+            }
+        ]
+    }
+}
+```
+
+# Change and delete Product Info
+- **PUT** /api/seller/{seller_id}/product/{product_id}
+<br>request:
+```json
+{
+    "name": "string",
+    "price": "float",
+    "description": "string",
+    "image": "string",
+    "tags": "string",
+    "items_available": "int"
+}
+```
+response:
+```json
+{
+  "content": "success"
+}
+```
+- **DELETE** /api/seller/{seller_id}/product/{product_id}
+<br> response:
+```json
+{
+  "content": "success"
+}
+```
+
+
+# Client Cart
+## add products to cart
+- **PUT** /api/client/{client_id}/cart
+<br> request:
+```json
+{
+    "orders":[
+        {
+            "product":"1f154d40-bf20-40ab-90d0-c86740a538dc",
+            "quantity":2
+        },
+        {
+            "product":"087b5341-8803-4e28-b6f4-7e3ad9949b62",
+            "quantity":3
+        },
+        {
+            // another order
+        }
+    ]
+}
+```
+response:
+```json
+{
+  "content": "success"
+}
+```
+## buy products from cart
+- **POST** /api/client/{client_id}/cart
+<br> response:
+```json
+{
+  "content": "success"
 }
 ```
