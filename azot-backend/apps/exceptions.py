@@ -5,3 +5,8 @@ class PurchaseError(APIException):
     status_code = 400
     default_detail = 'Transaction failed. Please try again.'
     default_code = 'purchase_error'
+
+class PermissionDenied(APIException):
+    status_code = 403
+    default_detail = 'You do not have permission to perform this action.'
+    default_code = 'permission_denied'

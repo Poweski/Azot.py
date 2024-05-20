@@ -11,11 +11,10 @@ class SellerInSerializer(serializers.Serializer):
         return Seller.objects.create(id=uuid.uuid4(),
                                      email=validated_data.get('email'),
                                      password=validated_data.get('password'),
-                                     seller_info=SellerInfo.objects.create()
+                                     seller_info=SellerInfo.objects.create(),
                                      )
 
     def update(self, instance, validated_data):
-        instance.id = uuid.uuid4()
         instance.email = validated_data.get('email', instance.email)
         instance.password = validated_data.get('password', instance.password)
         instance.save()
