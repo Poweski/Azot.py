@@ -1,4 +1,7 @@
+from django.db import models
 from rest_framework import serializers
+import apps.serializers.tojson.review_serializers
+
 
 class SellerOutSerializer(serializers.Serializer):
     id = serializers.UUIDField()
@@ -59,11 +62,8 @@ class SellerShortOutSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {
             'seller_info': SellerInfoShortOutSerializer().to_representation(instance.seller_info),
-        }
-
-    def to_internal_value(self, data):
-        return {
-            'seller_info': SellerInfoShortOutSerializer().to_internal_value(data.get('seller_info')),
+            'average_rating': instance.sellerreview_set.all().aggregate(models.Avg('rating'))['rating__avg'],
+            'reviews': apps.serializers.tojson.review_serializers.SellerReviewOutSerializer(instance.sellerreview_set.all(), many=True).data,
         }
 
 class ProductOutSerializer(serializers.Serializer):
@@ -86,19 +86,11 @@ class ProductOutSerializer(serializers.Serializer):
             'owner': SellerShortOutSerializer().to_representation(instance.owner),
             'items_available': instance.items_available,
             'tags': instance.tags,
+            'average_rating': instance.productreview_set.all().aggregate(models.Avg('rating'))['rating__avg'],
+            'reviews': apps.serializers.tojson.review_serializers.ProductReviewOutSerializer(instance.productreview_set.all(), many=True).data,
         }
 
-    def to_internal_value(self, data):
-        return {
-            'id': data.get('id'),
-            'name': data.get('name'),
-            'price': data.get('price'),
-            'description': data.get('description'),
-            'image': data.get('image'),
-            'owner': SellerShortOutSerializer().to_internal_value(data.get('owner')),
-            'items_available': data.get('items_available'),
-            'tags': data.get('tags'),
-        }
+
 
 class PurchaseSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField()
@@ -138,6 +130,7 @@ class SellerOutWithInfoSerializer(serializers.Serializer):
             'seller_info': SellerInfoOutSerializer().to_representation(instance.seller_info),
             'products': ProductOutSerializer(instance.product_set.all(), many=True).data,
             'purchases': PurchaseSerializer(instance.purchase_set.all(), many=True).data,
+
         }
 
 

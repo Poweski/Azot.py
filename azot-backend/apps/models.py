@@ -88,4 +88,24 @@ class Cart(models.Model):
     def __str__(self):
         return self.id
 
+class ProductReview(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    text = models.TextField()
+    rating = models.IntegerField()
+
+    def __str__(self):
+        return self.id
+
+class SellerReview(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    text = models.TextField()
+    rating = models.IntegerField()
+
+    def __str__(self):
+        return self.id
+
 

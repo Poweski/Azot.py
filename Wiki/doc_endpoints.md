@@ -57,23 +57,52 @@ response:
             "address": "string"
         },
         "products": [
-            {
-                "id": "string",
-                "name": "string",
-                "price": 122.32,
-                "description": "string",
-                "image": "https://picsum.photos/id/237/200/300",
-                "owner": {
-                    "seller_info": {
-                        "organization": "string"
+                  {
+                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                        "name": "product23",
+                        "price": 122.32,
+                        "description": "description",
+                        "image": "https://picsum.photos/id/237/200/300",
+                        "owner": {
+                            "seller_info": {
+                                "organization": null
+                            },
+                            "average_rating": 5.0,
+                            "reviews": [
+                                {
+                                    "text": "dwa",
+                                    "rating": 5,
+                                    "client": {
+                                        "name": "string",
+                                        "surname": "string"
+                                    }
+                                },
+                                {
+                                    // another review
+                                }
+                            ]
+                        },
+                        "average_rating": 4.0,
+                        "reviews": [
+                            {
+                                "text": "good",
+                                "rating": 5,
+                                "client": {
+                                      "name": "string",
+                                      "surname": "string"
+                                }
+                            },
+                            {
+                                // another review
+                            }
+                        ],
+                        "items_available": 3,
+                        "tags": "test"
+                    },
+                    {
+                      // another product
                     }
-                },
-                "items_available": 5,
-                "tags": "string"
-            },
-            {
-            // another product
-            }
+                
         ],
         "purchases": [
             {
@@ -124,9 +153,37 @@ response:
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
                             "seller_info": {
-                                "organization": "string"
-                            }
+                                "organization": null
+                            },
+                            "average_rating": 5.0,
+                            "reviews": [
+                                {
+                                    "text": "dwa",
+                                    "rating": 5,
+                                    "client": {
+                                        "name": "string",
+                                        "surname": "string"
+                                    }
+                                },
+                                {
+                                    // another review
+                                }
+                            ]
                         },
+                        "average_rating": 4.0,
+                        "reviews": [
+                            {
+                                "text": "good",
+                                "rating": 5,
+                                "client": {
+                                      "name": "string",
+                                      "surname": "string"
+                                }
+                            },
+                            {
+                                // another review
+                            }
+                        ],
                         "items_available": 3,
                         "tags": "test"
                     }
@@ -176,22 +233,50 @@ response:
 {
   "content": [
     {
-      "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
-      "name": "product23",
-      "price": 122.32,
-      "description": "description",
-      "image": "https://picsum.photos/id/237/200/300",
-      "owner": {
-        "seller_info": {
-          "organization": "string"
-        }
-      },
-      "items_available": 3,
-      "tags": "test"
-    },
-    {
-      // another product
-    }
+                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                        "name": "product23",
+                        "price": 122.32,
+                        "description": "description",
+                        "image": "https://picsum.photos/id/237/200/300",
+                        "owner": {
+                            "seller_info": {
+                                "organization": null
+                            },
+                            "average_rating": 5.0,
+                            "reviews": [
+                                {
+                                    "text": "dwa",
+                                    "rating": 5,
+                                    "client": {
+                                        "name": "string",
+                                        "surname": "string"
+                                    }
+                                },
+                                {
+                                    // another review
+                                }
+                            ]
+                        },
+                        "average_rating": 4.0,
+                        "reviews": [
+                            {
+                                "text": "good",
+                                "rating": 5,
+                                "client": {
+                                      "name": "string",
+                                      "surname": "string"
+                                }
+                            },
+                            {
+                                // another review
+                            }
+                        ],
+                        "items_available": 3,
+                        "tags": "test"
+                    },
+                    {
+                   // another product
+                    }
   ]
 }
 ```
@@ -266,9 +351,37 @@ response:
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
                             "seller_info": {
-                                "organization": "string"
-                            }
+                                "organization": null
+                            },
+                            "average_rating": 5.0,
+                            "reviews": [
+                                {
+                                    "text": "dwa",
+                                    "rating": 5,
+                                    "client": {
+                                        "name": "string",
+                                        "surname": "string"
+                                    }
+                                },
+                                {
+                                    // another review
+                                }
+                            ]
                         },
+                        "average_rating": 4.0,
+                        "reviews": [
+                            {
+                                "text": "good",
+                                "rating": 5,
+                                "client": {
+                                      "name": "string",
+                                      "surname": "string"
+                                }
+                            },
+                            {
+                                // another review
+                            }
+                        ],
                         "items_available": 3,
                         "tags": "test"
                     }
@@ -320,23 +433,52 @@ response:
             "address": "string"
         },
         "products": [
-            {
-                "id": "string",
-                "name": "string",
-                "price": 122.32,
-                "description": "string",
-                "image": "https://picsum.photos/id/237/200/300",
-                "owner": {
-                    "seller_info": {
-                        "organization": "string"
+                  {
+                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                        "name": "product23",
+                        "price": 122.32,
+                        "description": "description",
+                        "image": "https://picsum.photos/id/237/200/300",
+                        "owner": {
+                            "seller_info": {
+                                "organization": null
+                            },
+                            "average_rating": 5.0,
+                            "reviews": [
+                                {
+                                    "text": "dwa",
+                                    "rating": 5,
+                                    "client": {
+                                        "name": "string",
+                                        "surname": "string"
+                                    }
+                                },
+                                {
+                                    // another review
+                                }
+                            ]
+                        },
+                        "average_rating": 4.0,
+                        "reviews": [
+                            {
+                                "text": "good",
+                                "rating": 5,
+                                "client": {
+                                      "name": "string",
+                                      "surname": "string"
+                                }
+                            },
+                            {
+                                // another review
+                            }
+                        ],
+                        "items_available": 3,
+                        "tags": "test"
+                    },
+                    {
+                      // another product
                     }
-                },
-                "items_available": 5,
-                "tags": "string"
-            },
-            {
-            // another product
-            }
+                
         ],
         "purchases": [
             {
@@ -411,6 +553,37 @@ response:
 ## buy products from cart
 - **POST** /api/client/{client_id}/cart
 <br> response:
+```json
+{
+  "content": "success"
+}
+```
+# Reviews
+## Add Product Review
+- **POST** /api/client/{client_id}/product/review/{product_id}
+<br> request:
+```json
+{
+    "text": "string",
+    "rating": "int"
+}
+```
+response:
+```json
+{
+  "content": "success"
+}
+```
+## Add Seller Review
+- **POST** /api/client/{client_id}/seller/review/{seller_id}
+<br> request:
+```json
+{
+    "text": "string",
+    "rating": "int"
+}
+```
+response:
 ```json
 {
   "content": "success"

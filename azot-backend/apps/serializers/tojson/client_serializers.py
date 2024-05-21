@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
-from apps.serializers.tojson.seller_serializers import PurchaseSerializer
+# import apps.serializers.tojson.client_cart_serializer import CartOutSerializer
+# import apps.serializers.tojson.seller_serializers import PurchaseSerializer
+import apps.serializers.tojson.client_cart_serializer
+import apps.serializers.tojson.seller_serializers
 
 
 class ClientOutSerializer(serializers.Serializer):
@@ -48,12 +50,23 @@ class ClientInfoOutSerializer(serializers.Serializer):
             'balance': data.get('balance'),
         }
 
+class ClientOutShortSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    email = serializers.EmailField()
+    client_info = ClientInfoOutSerializer()
+
+    def to_representation(self, instance):
+        return {
+            'name': instance.client_info.name,
+            'surname': instance.client_info.surname,
+        }
+
 
 class ClientOutWithInfoSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     email = serializers.EmailField()
     client_info = ClientInfoOutSerializer()
-    cart = CartOutSerializer()
+    cart = apps.serializers.tojson.client_cart_serializer.CartOutSerializer()
 
 
     def to_representation(self, instance):
@@ -61,8 +74,8 @@ class ClientOutWithInfoSerializer(serializers.Serializer):
             'id': instance.id,
             'email': instance.email,
             'client_info': ClientInfoOutSerializer().to_representation(instance.client_info),
-            'cart': CartOutSerializer().to_representation(instance.cart),
-            'purchases': PurchaseSerializer(instance.purchase_set.all(), many=True).data,
+            'cart': apps.serializers.tojson.client_cart_serializer.CartOutSerializer().to_representation(instance.cart),
+            'purchases': apps.serializers.tojson.seller_serializers.PurchaseSerializer(instance.purchase_set.all(), many=True).data,
         }
 
     def to_internal_value(self, data):
@@ -70,5 +83,5 @@ class ClientOutWithInfoSerializer(serializers.Serializer):
             'id': data.get('id'),
             'email': data.get('email'),
             'client_info': ClientInfoOutSerializer().to_internal_value(data.get('client_info')),
-            'cart': CartOutSerializer().to_internal_value(data.get('cart')),
+            'cart': apps.serializers.tojson.client_cart_serializer.CartOutSerializer().to_internal_value(data.get('cart')),
         }
