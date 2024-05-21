@@ -10,11 +10,13 @@ from apps.serializers.fromjson.product_serializers import ProductInSerializer
 from apps.serializers.fromjson.client_serializers import ClientInSerializer, ClientInfoInSerializer
 from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer
 from apps.serializers.fromjson.seller_serializers import SellerInSerializer, SellerInfoInSerializer
+from apps.serializers.fromjson.review_serializers import ProductReviewInSerializer, SellerReviewInSerializer
 
 
 
 
-from apps.models import Client, Seller, Product, Purchase, Cart, Order
+
+from apps.models import Client, Seller, Product, Purchase, Cart, Order, ProductReview, SellerReview
 
 from apps.exceptions import PurchaseError, PermissionDenied
 
@@ -180,6 +182,38 @@ class ClientBuyProductView(APIView):
 
         Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product_name=product.name, quantity=1, cost=product.price, client=client)
 
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+class ClientReviewProductView(APIView):
+    def post(self, request, client_id, product_id):
+        client = Client.objects.get(id=client_id)
+        product = Product.objects.get(id=product_id)
+
+        if not Purchase.objects.filter(product_name=product.name, client=client).first():
+            raise PermissionDenied()
+
+        if ProductReview.objects.filter(product=product, client=client).first():
+            raise PermissionDenied()
+
+        product_review = ProductReviewInSerializer(data=request.data)
+        product_review.is_valid(raise_exception=True)
+        product_review.create(product_review.validated_data, product, client)
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+class ClientReviewSellerView(APIView):
+    def post(self, request, client_id, seller_id):
+        client = Client.objects.get(id=client_id)
+        seller = Seller.objects.get(id=seller_id)
+
+        if not Purchase.objects.filter(seller=seller, client=client).first():
+            raise PermissionDenied()
+
+        if SellerReview.objects.filter(seller=seller, client=client).first():
+            raise PermissionDenied()
+
+        seller_review = SellerReviewInSerializer(data=request.data)
+        seller_review.is_valid(raise_exception=True)
+        seller_review.create(seller_review.validated_data, seller, client)
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 
