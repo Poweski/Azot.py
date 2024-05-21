@@ -1,15 +1,16 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import requests
-from typing import TYPE_CHECKING
+from utils import adjust_window
 
-if TYPE_CHECKING:
-    from main_frontend import App
 
 class RegistrationFrame(ctk.CTkFrame):
-    def __init__(self, master: 'App'):
+    def __init__(self, master):
         super().__init__(master)
         self.master = master
+
+        window_size = adjust_window(350, 350, master)
+        master.geometry(window_size)
 
         ctk.CTkLabel(self, text='Register', font=('Helvetica', 20)).grid(row=0, column=1, pady=10)
 

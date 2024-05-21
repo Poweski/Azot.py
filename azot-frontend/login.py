@@ -1,14 +1,10 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import requests
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from main_frontend import App
 
 
 class LoginFrame(ctk.CTkFrame):
-    def __init__(self, master: 'App'):
+    def __init__(self, master):
         super().__init__(master)
         self.master = master
 
@@ -37,6 +33,9 @@ class LoginFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
         if response.status_code == 200:
             self.master.active_user_id = response.json().get('id')
-            self.master.create_main_frame()
+            if user_type == 'seller':
+                self.master.create_seller_main_frame()
+            else:
+                self.master.create_client_main_frame()
         else:
             messagebox.showerror('Login Error', 'Invalid email or password')
