@@ -17,5 +17,4 @@ where "string" is the exception message.
 ## Ports
 - The following ports will be used:
   - 8080: For the Backend
-  - 8081: For the Frontend
 
