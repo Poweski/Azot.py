@@ -14,6 +14,7 @@ def custom_exception_handler(exc, context):
             'DoesNotExist': _handler_not_found,
             'PurchaseError': _handler_purchase_error,
             'PermissionDenied': _handler_permission_denied,
+            'NotActivated': _handler_not_activated
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
@@ -62,3 +63,6 @@ def _handler_purchase_error(exc, context, res):
 
 def _handler_permission_denied(exc, context, res):
     return "Permission denied", 400
+
+def _handler_not_activated(exc, context, res):
+    return "Your account is not activated yet. Please check your email.", 400

@@ -18,9 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from apps.views import (ClientRegisterView, ClientLoginView, SellerRegisterView, SellerLoginView,
                         SellerAddProductView, GetProductsView, ClientCartView, ClientAddBalanceView, ClientChangeInfoView,
-                        SellerChangeInfoView, ClientBuyProductView, SellerProductView, ClientReviewSellerView, ClientReviewProductView)
-
-
+                        SellerChangeInfoView, ClientBuyProductView, SellerProductView, ClientReviewSellerView, ClientReviewProductView,
+                        SellerActivateView, ClientActivateView, ClientForgotPasswordView, SellerForgotPasswordView, password_reset)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,4 +37,10 @@ urlpatterns = [
     path('api/seller/<str:seller_id>/product/<str:product_id>', SellerProductView.as_view()),
     path('api/client/<str:client_id>/review/seller/<str:seller_id>', ClientReviewSellerView.as_view()),
     path('api/client/<str:client_id>/review/product/<str:product_id>', ClientReviewProductView.as_view()),
+    path('api/seller/activate/<str:token_id>', SellerActivateView.as_view()),
+    path('api/client/activate/<str:token_id>', ClientActivateView.as_view()),
+    path('api/password/client', ClientForgotPasswordView.as_view()),
+    path('api/password/seller', SellerForgotPasswordView.as_view()),
+    path('reset-password/', password_reset, name='password_reset')
+
 ]
