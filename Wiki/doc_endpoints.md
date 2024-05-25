@@ -589,3 +589,31 @@ response:
   "content": "success"
 }
 ```
+
+# Forgot Password
+- **POST** /api/password/forgot
+<br> request:
+```json
+{
+    "email": "string"
+}
+```
+response:
+```json
+{
+  "content": "success"
+}
+```
+- **POST** /api/password/client
+<br> request:
+```json
+{
+    "email": "string"
+}
+```
+response:
+```json
+{
+  "content": "success"
+}
+```
