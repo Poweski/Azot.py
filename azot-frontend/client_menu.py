@@ -1,7 +1,4 @@
-import customtkinter as ctk
-from ConfirmDialog import ConfirmDialog
-from utils import adjust_window
-from SearchBar import SearchBar
+from utils import *
 
 
 class MainMenuFrame(ctk.CTkFrame):
@@ -26,7 +23,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkButton(left_frame, text='Favorites', command=master.create_favorites_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Cart', command=master.create_cart_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Orders', command=master.create_orders_frame).pack(padx=20, pady=10)
-        ctk.CTkButton(left_frame, text='Options', command=master.create_options_frame).pack(padx=20, pady=10)
+        ctk.CTkButton(left_frame, text='Settings', command=master.create_settings_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Log Out', command=self.log_out).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text="Close App", command=self.quit).pack(padx=20, pady=10)
 
@@ -36,13 +33,17 @@ class MainMenuFrame(ctk.CTkFrame):
 
         search_frame = ctk.CTkFrame(main_frame)
         search_frame.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
-        self.search_bar = SearchBar(search_frame, search_callback=self.handle_search)
-        self.search_bar.pack(fill="x")
+        categories = ['Everything', 'Electronics', 'Fashion', 'Home & Kitchen', 'Health & Beauty', 'Sports & Outdoors']
+        search_category = ctk.CTkComboBox(search_frame, values=categories, button_color='#1f538d')
+        search_category.grid(column=0, row=0, padx=5, pady=5, sticky='ew')
+        search_entry = ctk.CTkEntry(search_frame, placeholder_text='Product name')
+        search_entry.grid(column=1, row=0, sticky='ew')
+        search_button = ctk.CTkButton(search_frame, text="Search", command=self.search)
+        search_button.grid(column=2, row=0, padx=5, pady=5)
 
         offers_frame = ctk.CTkFrame(main_frame, fg_color="#313335")
         offers_frame.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         ctk.CTkLabel(offers_frame, text='Popular offers', font=('Helvetica', 18)).pack(pady=10)
-        # TODO: Show random offers
 
         main_frame.columnconfigure(0, weight=0)
         main_frame.columnconfigure(1, weight=1)
@@ -50,7 +51,11 @@ class MainMenuFrame(ctk.CTkFrame):
         main_frame.rowconfigure(1, weight=0)
         main_frame.rowconfigure(2, weight=1)
 
-    def handle_search(self, query):
+        search_frame.columnconfigure(0, weight=0)
+        search_frame.columnconfigure(1, weight=1)
+        search_frame.columnconfigure(2, weight=0)
+
+    def search(self):
         pass
 
     def log_out(self):

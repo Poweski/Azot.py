@@ -1,4 +1,3 @@
-import customtkinter as ctk
 import seller_menu
 import client_menu
 import seller_profile
@@ -6,30 +5,33 @@ import client_profile
 from login import LoginFrame
 from register import RegistrationFrame
 from add_product import AddProductFrame
-from sell_product import SellProductFrame
-from utils import adjust_window
+from settings import SettingsFrame
+from utils import *
 
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title('Azot')
 
+        self.title('Azot')
         window_size = adjust_window(350, 350, self)
         self.geometry(window_size)
-
+        self.resizable(False, False)
         ctk.set_appearance_mode('dark')
         ctk.set_default_color_theme('dark-blue')
+        self.scaling = '100%'
+        self.theme = 'Dark'
 
-        self.active_user_id = None
+        self.user = None
+
         self.login_frame = None
         self.registration_frame = None
         self.main_frame = None
         self.add_product_frame = None
-        self.sell_product_frame = None
         self.profile_frame = None
+        self.settings_frame = None
 
-        self.create_client_main_frame()
+        self.create_login_frame()
 
     def create_login_frame(self):
         self.clear_frame()
@@ -55,11 +57,6 @@ class App(ctk.CTk):
         self.clear_frame()
         self.add_product_frame = AddProductFrame(self)
         self.add_product_frame.pack(fill='both', expand=True)
-
-    def create_sell_product_frame(self):
-        self.clear_frame()
-        self.sell_product_frame = SellProductFrame(self)
-        self.sell_product_frame.pack(fill='both', expand=True)
 
     def create_client_profile_frame(self):
         self.clear_frame()
@@ -89,8 +86,10 @@ class App(ctk.CTk):
     def create_announcements_frame(self):
         pass
 
-    def create_options_frame(self):
-        pass
+    def create_settings_frame(self):
+        self.clear_frame()
+        self.settings_frame = SettingsFrame(self)
+        self.settings_frame.pack(fill='both', expand=True)
 
     def clear_frame(self):
         for widget in self.winfo_children():

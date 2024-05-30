@@ -1,7 +1,6 @@
-import customtkinter as ctk
-from tkinter import messagebox
 import requests
-from utils import adjust_window
+from classes import *
+from utils import *
 
 
 class LoginFrame(ctk.CTkFrame):
@@ -20,32 +19,30 @@ class LoginFrame(ctk.CTkFrame):
         self.client_tab = self.tabview.add('Client')
         self.seller_tab = self.tabview.add('Seller')
 
-        self.create_client_login_tab()
-        self.create_seller_login_tab()
+        self.create_login_tab(self.client_tab, 'client')
+        self.create_login_tab(self.seller_tab, 'seller')
 
-    def create_client_login_tab(self):
-        ctk.CTkLabel(self.client_tab, text='Email').grid(row=0, column=0, padx=10, pady=5)
-        self.client_email_entry = ctk.CTkEntry(self.client_tab)
-        self.client_email_entry.grid(row=0, column=1, padx=10, pady=5)
+    def create_login_tab(self, tab, user_type):
+        ctk.CTkLabel(tab, text='').grid(row=0, column=0, padx=10, pady=1)
+        ctk.CTkLabel(tab, text='Email').grid(row=1, column=0, padx=10, pady=5)
+        email_entry = ctk.CTkEntry(tab)
+        email_entry.grid(row=1, column=1, padx=10, pady=5)
 
-        ctk.CTkLabel(self.client_tab, text='Password').grid(row=1, column=0, padx=10, pady=5)
-        self.client_password_entry = ctk.CTkEntry(self.client_tab, show='*')
-        self.client_password_entry.grid(row=1, column=1, padx=10, pady=5)
+        ctk.CTkLabel(tab, text='Password').grid(row=2, column=0, padx=10, pady=5)
+        password_entry = ctk.CTkEntry(tab, show='*')
+        password_entry.grid(row=2, column=1, padx=10, pady=5)
+        ctk.CTkLabel(tab, text='').grid(row=3, column=0, padx=10, pady=1)
 
-        ctk.CTkButton(self.client_tab, text='Login', command=self.login_client).grid(row=2, column=1, pady=10)
-        ctk.CTkButton(self.client_tab, text='Register', command=self.master.create_registration_frame).grid(row=3, column=1, pady=10)
+        if user_type == 'client':
+            self.client_email_entry = email_entry
+            self.client_password_entry = password_entry
+            ctk.CTkButton(tab, text='Login', command=self.login_client).grid(row=4, column=1, pady=10)
+        else:
+            self.seller_email_entry = email_entry
+            self.seller_password_entry = password_entry
+            ctk.CTkButton(tab, text='Login', command=self.login_seller).grid(row=4, column=1, pady=10)
 
-    def create_seller_login_tab(self):
-        ctk.CTkLabel(self.seller_tab, text='Email').grid(row=0, column=0, padx=10, pady=5)
-        self.seller_email_entry = ctk.CTkEntry(self.seller_tab)
-        self.seller_email_entry.grid(row=0, column=1, padx=10, pady=5)
-
-        ctk.CTkLabel(self.seller_tab, text='Password').grid(row=1, column=0, padx=10, pady=5)
-        self.seller_password_entry = ctk.CTkEntry(self.seller_tab, show='*')
-        self.seller_password_entry.grid(row=1, column=1, padx=10, pady=5)
-
-        ctk.CTkButton(self.seller_tab, text='Login', command=self.login_seller).grid(row=2, column=1, pady=10)
-        ctk.CTkButton(self.seller_tab, text='Register', command=self.master.create_registration_frame).grid(row=3, column=1, pady=10)
+        ctk.CTkButton(tab, text='Register', command=self.master.create_registration_frame).grid(row=5, column=1, pady=10)
 
     def login_client(self):
         self.login('client')
@@ -59,11 +56,55 @@ class LoginFrame(ctk.CTkFrame):
         url = f'http://localhost:8080/api/{user_type}/login'
         data = {'email': email, 'password': password}
         response = requests.post(url, json=data)
+
         if response.status_code == 200:
-            self.master.active_user_id = response.json().get('id')
-            if user_type == 'seller':
-                self.master.create_seller_main_frame()
-            else:
-                self.master.create_client_main_frame()
+            self.handle_successful_login(response.json(), user_type, email, password)
         else:
-            messagebox.showerror('Login Error', 'Invalid email or password')
+            self.show_error_dialog()
+
+    def handle_successful_login(self, response_data, user_type, email, password):
+        user_data = response_data.get('content')
+        if user_type == 'seller':
+            self.master.user = self.create_seller_user(user_data, email, password)
+            self.master.create_seller_main_frame()
+        else:
+            self.master.user = self.create_client_user(user_data, email, password)
+            self.master.create_client_main_frame()
+
+    def create_seller_user(self, user_data, email, password):
+        seller_info_data = user_data.get('seller_info')
+        seller_info = None
+        if seller_info_data:
+            seller_info = SellerInfo(
+                organization=seller_info_data.get('organization'),
+                phone=seller_info_data.get('phone'),
+                address=seller_info_data.get('address')
+            )
+        return Seller(
+            id=user_data.get('id'),
+            email=email,
+            password=password,
+            seller_info=seller_info
+        )
+
+    def create_client_user(self, user_data, email, password):
+        client_info_data = user_data.get('client_info')
+        client_info = None
+        if client_info_data:
+            client_info = ClientInfo(
+                name=client_info_data.get('name'),
+                surname=client_info_data.get('surname'),
+                phone=client_info_data.get('phone'),
+                address=client_info_data.get('address'),
+                balance=client_info_data.get('balance')
+            )
+        return Client(
+            id=user_data.get('id'),
+            email=email,
+            password=password,
+            client_info=client_info
+        )
+
+    def show_error_dialog(self):
+        error = ErrorDialog(self, message='Invalid email or password!')
+        error.show()

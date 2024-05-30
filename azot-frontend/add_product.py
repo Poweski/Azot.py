@@ -1,7 +1,6 @@
-import customtkinter as ctk
 import requests
 from tkinter import messagebox
-from utils import adjust_window
+from utils import *
 
 
 class AddProductFrame(ctk.CTkFrame):
