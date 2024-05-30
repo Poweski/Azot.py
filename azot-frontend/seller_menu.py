@@ -23,3 +23,4 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkButton(self, text='Messages', command=master.create_messages_frame).grid(row=2, column=left_column, padx=10, pady=5)
         ctk.CTkButton(self, text='Notifications', command=master.create_notifications_frame).grid(row=3, column=left_column, padx=10, pady=5)
         ctk.CTkButton(self, text='Your products', command=master.create_announcements_frame).grid(row=7, column=left_column, padx=10, pady=5)
+        ctk.CTkButton(self, text="Close App", command=master.quit).grid(row=6, column=left_column, padx=10, pady=5)

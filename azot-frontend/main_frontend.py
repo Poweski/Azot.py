@@ -29,47 +29,47 @@ class App(ctk.CTk):
         self.sell_product_frame = None
         self.profile_frame = None
 
-        self.create_login_frame()
+        self.create_client_main_frame()
 
     def create_login_frame(self):
         self.clear_frame()
         self.login_frame = LoginFrame(self)
-        self.login_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.login_frame.pack(fill='both', expand=True)
 
     def create_registration_frame(self):
         self.clear_frame()
         self.registration_frame = RegistrationFrame(self)
-        self.registration_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.registration_frame.pack(fill='both', expand=True)
 
     def create_seller_main_frame(self):
         self.clear_frame()
         self.main_frame = seller_menu.MainMenuFrame(self)
-        self.main_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.main_frame.pack(fill='both', expand=True)
 
     def create_client_main_frame(self):
         self.clear_frame()
         self.main_frame = client_menu.MainMenuFrame(self)
-        self.main_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.main_frame.pack(fill='both', expand=True)
 
     def create_add_product_frame(self):
         self.clear_frame()
         self.add_product_frame = AddProductFrame(self)
-        self.add_product_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.add_product_frame.pack(fill='both', expand=True)
 
     def create_sell_product_frame(self):
         self.clear_frame()
         self.sell_product_frame = SellProductFrame(self)
-        self.sell_product_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.sell_product_frame.pack(fill='both', expand=True)
 
     def create_client_profile_frame(self):
         self.clear_frame()
         self.profile_frame = client_profile.ProfileFrame(self)
-        self.profile_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.profile_frame.pack(fill='both', expand=True)
 
     def create_seller_profile_frame(self):
         self.clear_frame()
         self.profile_frame = seller_profile.ProfileFrame(self)
-        self.profile_frame.pack(pady=20, padx=20, fill='both', expand=True)
+        self.profile_frame.pack(fill='both', expand=True)
 
     def create_messages_frame(self):
         pass
@@ -89,9 +89,15 @@ class App(ctk.CTk):
     def create_announcements_frame(self):
         pass
 
+    def create_options_frame(self):
+        pass
+
     def clear_frame(self):
         for widget in self.winfo_children():
             widget.destroy()
+
+    def quit(self):
+        self.destroy()
 
 
 if __name__ == '__main__':

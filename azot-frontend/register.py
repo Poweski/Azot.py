@@ -9,39 +9,72 @@ class RegistrationFrame(ctk.CTkFrame):
         super().__init__(master)
         self.master = master
 
-        window_size = adjust_window(350, 350, master)
+        window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
 
-        ctk.CTkLabel(self, text='Register', font=('Helvetica', 20)).grid(row=0, column=1, pady=10)
+        ctk.CTkLabel(self, text='Register', font=('Helvetica', 20)).pack(pady=10)
 
-        ctk.CTkLabel(self, text='Email').grid(row=1, column=0, padx=10, pady=5)
-        self.register_email_entry = ctk.CTkEntry(self)
-        self.register_email_entry.grid(row=1, column=1, padx=10, pady=5)
+        self.tabview = ctk.CTkTabview(self)
+        self.tabview.pack(padx=10, pady=10, fill='both', expand=True)
 
-        ctk.CTkLabel(self, text='Password').grid(row=2, column=0, padx=10, pady=5)
-        self.register_password_entry = ctk.CTkEntry(self, show='*')
-        self.register_password_entry.grid(row=2, column=1, padx=10, pady=5)
+        self.client_tab = self.tabview.add('Client')
+        self.seller_tab = self.tabview.add('Seller')
 
-        ctk.CTkLabel(self, text='Confirm Password').grid(row=3, column=0, padx=10, pady=5)
-        self.confirm_password_entry = ctk.CTkEntry(self, show='*')
-        self.confirm_password_entry.grid(row=3, column=1, padx=10, pady=5)
+        self.create_client_registration_tab()
+        self.create_seller_registration_tab()
 
-        self.register_seller_var = ctk.IntVar()
-        ctk.CTkCheckBox(self, text='Seller', variable=self.register_seller_var).grid(row=4, column=1, pady=5)
+    def create_client_registration_tab(self):
+        ctk.CTkLabel(self.client_tab, text='Email').grid(row=0, column=0, padx=10, pady=5)
+        self.client_email_entry = ctk.CTkEntry(self.client_tab)
+        self.client_email_entry.grid(row=0, column=1, padx=10, pady=5)
 
-        ctk.CTkButton(self, text='Register', command=self.register).grid(row=5, column=1, pady=10)
-        ctk.CTkButton(self, text='Back to Login', command=master.create_login_frame).grid(row=6, column=1, pady=10)
+        ctk.CTkLabel(self.client_tab, text='Password').grid(row=1, column=0, padx=10, pady=5)
+        self.client_password_entry = ctk.CTkEntry(self.client_tab, show='*')
+        self.client_password_entry.grid(row=1, column=1, padx=10, pady=5)
 
-    def register(self):
-        email = self.register_email_entry.get()
-        password = self.register_password_entry.get()
-        confirm_password = self.confirm_password_entry.get()
+        ctk.CTkLabel(self.client_tab, text='Confirm Password').grid(row=2, column=0, padx=10, pady=5)
+        self.client_confirm_password_entry = ctk.CTkEntry(self.client_tab, show='*')
+        self.client_confirm_password_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        ctk.CTkButton(self.client_tab, text='Register', command=self.register_client).grid(row=3, column=1, pady=10)
+        ctk.CTkButton(self.client_tab, text='Back to Login', command=self.master.create_login_frame).grid(row=4, column=1, pady=10)
+
+    def create_seller_registration_tab(self):
+        ctk.CTkLabel(self.seller_tab, text='Email').grid(row=0, column=0, padx=10, pady=5)
+        self.seller_email_entry = ctk.CTkEntry(self.seller_tab)
+        self.seller_email_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        ctk.CTkLabel(self.seller_tab, text='Password').grid(row=1, column=0, padx=10, pady=5)
+        self.seller_password_entry = ctk.CTkEntry(self.seller_tab, show='*')
+        self.seller_password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        ctk.CTkLabel(self.seller_tab, text='Confirm Password').grid(row=2, column=0, padx=10, pady=5)
+        self.seller_confirm_password_entry = ctk.CTkEntry(self.seller_tab, show='*')
+        self.seller_confirm_password_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        ctk.CTkButton(self.seller_tab, text='Register', command=self.register_seller).grid(row=3, column=1, pady=10)
+        ctk.CTkButton(self.seller_tab, text='Back to Login', command=self.master.create_login_frame).grid(row=4, column=1, pady=10)
+
+    def register_client(self):
+        self.register('client')
+
+    def register_seller(self):
+        self.register('seller')
+
+    def register(self, user_type):
+        if user_type == 'client':
+            email = self.client_email_entry.get()
+            password = self.client_password_entry.get()
+            confirm_password = self.client_confirm_password_entry.get()
+        else:
+            email = self.seller_email_entry.get()
+            password = self.seller_password_entry.get()
+            confirm_password = self.seller_confirm_password_entry.get()
 
         if password != confirm_password:
             messagebox.showerror('Registration Error', 'Passwords do not match')
             return
 
-        user_type = 'seller' if self.register_seller_var.get() else 'client'
         url = f'http://localhost:8080/api/{user_type}/register'
         data = {'email': email, 'password': password}
         response = requests.post(url, json=data)
