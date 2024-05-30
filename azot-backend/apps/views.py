@@ -73,6 +73,12 @@ class GetProductsView(APIView):
         return Response({'content': ProductOutSerializer(products, many=True).data}, status=status.HTTP_200_OK)
 
 
+class GetRandomProductsView(APIView):
+    def get(self, request):
+        product = Product.objects.order_by('?')[0]
+        return Response({'content': ProductOutSerializer(product).data}, status=status.HTTP_200_OK)
+
+
 class ClientCartView(APIView):
     def put(self, request, client_id):
         client = Client.objects.get(id=client_id)

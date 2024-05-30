@@ -589,3 +589,53 @@ response:
   "content": "success"
 }
 ```
+
+## Get Random Product
+- **GET** /api/product/random
+<br> response:
+```json
+{
+  "content": {
+    "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+    "name": "product23",
+    "price": 122.32,
+    "description": "description",
+    "image": "https://picsum.photos/id/237/200/300",
+    "owner": {
+        "seller_info": {
+            "organization": null
+        },
+        "average_rating": 5.0,
+        "reviews": [
+            {
+                "text": "dwa",
+                "rating": 5,
+                "client": {
+                    "name": "string",
+                    "surname": "string"
+                }
+            },
+            {
+                // another review
+            }
+        ]
+    },
+    "average_rating": 4.0,
+    "reviews": [
+        {
+            "text": "good",
+            "rating": 5,
+            "client": {
+                  "name": "string",
+                  "surname": "string"
+            }
+        },
+        {
+            // another review
+        }
+    ],
+    "items_available": 3,
+    "tags": "test"
+  }
+}
+```
