@@ -61,6 +61,7 @@ class SellerShortOutSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         return {
+            'email': instance.email,
             'seller_info': SellerInfoShortOutSerializer().to_representation(instance.seller_info),
             'average_rating': instance.sellerreview_set.all().aggregate(models.Avg('rating'))['rating__avg'],
             'reviews': apps.serializers.tojson.review_serializers.SellerReviewOutSerializer(instance.sellerreview_set.all(), many=True).data,
@@ -90,6 +91,13 @@ class ProductOutSerializer(serializers.Serializer):
             'reviews': apps.serializers.tojson.review_serializers.ProductReviewOutSerializer(instance.productreview_set.all(), many=True).data,
         }
 
+class ProductShortOutSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+
+    def to_representation(self, instance):
+        return {
+            'id': instance.id,
+        }
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
@@ -128,9 +136,6 @@ class SellerOutWithInfoSerializer(serializers.Serializer):
             'id': instance.id,
             'email': instance.email,
             'seller_info': SellerInfoOutSerializer().to_representation(instance.seller_info),
-            'products': ProductOutSerializer(instance.product_set.all(), many=True).data,
-            'purchases': PurchaseSerializer(instance.purchase_set.all(), many=True).data,
-
         }
 
 
