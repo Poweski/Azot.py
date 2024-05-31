@@ -8,10 +8,10 @@ from apps.serializers.tojson.client_serializers import ClientOutSerializer, Clie
 from apps.serializers.tojson.seller_serializers import ProductOutSerializer
 from apps.serializers.fromjson.product_serializers import ProductInSerializer
 from apps.serializers.fromjson.client_serializers import ClientInSerializer, ClientInfoInSerializer
-from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer
+from apps.serializers.tojson.seller_serializers import SellerOutSerializer, SellerOutWithInfoSerializer, ProductShortOutSerializer, PurchaseSerializer
 from apps.serializers.fromjson.seller_serializers import SellerInSerializer, SellerInfoInSerializer
 from apps.serializers.fromjson.review_serializers import ProductReviewInSerializer, SellerReviewInSerializer
-
+from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
 
 
 
@@ -60,18 +60,28 @@ class SellerLoginView(APIView):
 
 
 class SellerAddProductView(APIView):
+    def get(self, request, seller_id):
+        seller = Seller.objects.get(id=seller_id)
+        return Response({'content': ProductOutSerializer(seller.product_set.all(), many=True).data}, status=status.HTTP_200_OK)
+
     def post(self, request, seller_id):
         seller = Seller.objects.get(id=seller_id)
         product = ProductInSerializer(data=request.data)
         product.is_valid(raise_exception=True)
-        product.create(product.validated_data, seller)
-        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+        new_product = product.create(product.validated_data, seller)
+        return Response({'content': ProductShortOutSerializer(new_product).data}, status=status.HTTP_200_OK)
 
 class GetProductsView(APIView):
     def get(self, request):
         products = Product.objects.all()
         return Response({'content': ProductOutSerializer(products, many=True).data}, status=status.HTTP_200_OK)
 
+    def post(self, request):
+        request_text = request.data['request']
+        tag_products = Product.objects.filter(tags__contains=request_text)
+        name_products = Product.objects.filter(name__contains=request_text)
+        products = tag_products | name_products
+        return Response({'content': ProductOutSerializer(products, many=True).data}, status=status.HTTP_200_OK)
 
 class GetRandomProductsView(APIView):
     def get(self, request):
@@ -80,6 +90,10 @@ class GetRandomProductsView(APIView):
 
 
 class ClientCartView(APIView):
+    def get(self, request, client_id):
+        client = Client.objects.get(id=client_id)
+        return Response({'content': CartOutSerializer(client.cart).data}, status=status.HTTP_200_OK)
+
     def put(self, request, client_id):
         client = Client.objects.get(id=client_id)
         orders = request.data['orders']
@@ -112,6 +126,17 @@ class ClientCartView(APIView):
 
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
+class ClientGetPurchasesView(APIView):
+    def get(self, request, client_id):
+        client = Client.objects.get(id=client_id)
+        purchases = client.purchase_set.all()
+        return Response({'content': PurchaseSerializer(purchases, many=True).data}, status=status.HTTP_200_OK)
+
+class SellerGetPurchasesView(APIView):
+    def get(self, request, seller_id):
+        seller = Seller.objects.get(id=seller_id)
+        purchases = seller.purchase_set.all()
+        return Response({'content': PurchaseSerializer(purchases, many=True).data}, status=status.HTTP_200_OK)
 
 
 class ClientChangeInfoView(APIView):

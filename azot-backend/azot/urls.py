@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from apps.views import (ClientRegisterView, ClientLoginView, SellerRegisterView, SellerLoginView,
                         SellerAddProductView, GetProductsView, ClientCartView, ClientAddBalanceView, ClientChangeInfoView,
-                        SellerChangeInfoView, ClientBuyProductView, SellerProductView, ClientReviewSellerView, ClientReviewProductView, GetRandomProductsView)
+                        SellerChangeInfoView, ClientBuyProductView, SellerProductView, ClientReviewSellerView, ClientReviewProductView, GetRandomProductsView,
+                        SellerGetPurchasesView, ClientGetPurchasesView)
 
 
 
@@ -39,4 +40,6 @@ urlpatterns = [
     path('api/client/<str:client_id>/review/seller/<str:seller_id>', ClientReviewSellerView.as_view()),
     path('api/client/<str:client_id>/review/product/<str:product_id>', ClientReviewProductView.as_view()),
     path('api/product/random', GetRandomProductsView.as_view()),
+    path('api/seller/<str:seller_id>/purchases', SellerGetPurchasesView.as_view()),
+    path('api/client/<str:client_id>/purchases', ClientGetPurchasesView.as_view())
 ]
