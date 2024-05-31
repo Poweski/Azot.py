@@ -1,6 +1,7 @@
 import requests
 from classes import *
 from utils import *
+import threading
 
 
 class LoginFrame(ctk.CTkFrame):
@@ -11,7 +12,7 @@ class LoginFrame(ctk.CTkFrame):
         window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
 
-        ctk.CTkLabel(self, text='Login', font=('Helvetica', 20)).pack(pady=10)
+        ctk.CTkLabel(self, text='Login', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
         self.tabview = ctk.CTkTabview(self)
         self.tabview.pack(padx=10, pady=10, fill='both', expand=True)
@@ -45,10 +46,12 @@ class LoginFrame(ctk.CTkFrame):
         ctk.CTkButton(tab, text='Register', command=self.master.create_registration_frame).grid(row=5, column=1, pady=10)
 
     def login_client(self):
-        self.login('client')
+        thread = threading.Thread(target=self.login, args=('client',))
+        thread.start()
 
     def login_seller(self):
-        self.login('seller')
+        thread = threading.Thread(target=self.login, args=('seller',))
+        thread.start()
 
     def login(self, user_type):
         self.master.user_type = user_type
@@ -59,9 +62,9 @@ class LoginFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            self.handle_successful_login(response.json(), user_type, email, password)
+            self.master.after(0, self.handle_successful_login, response.json(), user_type, email, password)
         else:
-            self.show_error_dialog()
+            self.master.after(0, self.show_error_dialog)
 
     def handle_successful_login(self, response_data, user_type, email, password):
         user_data = response_data.get('content')
@@ -85,7 +88,8 @@ class LoginFrame(ctk.CTkFrame):
             id=user_data.get('id'),
             email=email,
             password=password,
-            seller_info=seller_info
+            seller_info=seller_info,
+            products=[]
         )
 
     def create_client_user(self, user_data, email, password):

@@ -4,7 +4,7 @@ from utils import *
 class SettingsFrame(ctk.CTkFrame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.scale_optionmenu = None
+        self.scale_option_menu = None
 
         window_size = adjust_window(800, 600, master)
         master.geometry(window_size)
@@ -13,13 +13,13 @@ class SettingsFrame(ctk.CTkFrame):
         main_frame.pack(fill='both', expand=True)
 
         title_frame = ctk.CTkFrame(main_frame)
-        title_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nswe')
+        title_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
-        title_label = ctk.CTkLabel(title_frame, text='Settings', font=('Helvetica', 24))
+        title_label = ctk.CTkLabel(title_frame, text='Settings', font=('Helvetica', 24, 'bold'))
         title_label.pack(pady=10)
 
         view_frame = ctk.CTkFrame(main_frame)
-        view_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nswe')
+        view_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
         ctk.CTkLabel(view_frame, text='Change View', font=('Helvetica', 20)).pack(padx=10, pady=10)
 
@@ -27,26 +27,26 @@ class SettingsFrame(ctk.CTkFrame):
         self.scale_label = ctk.CTkLabel(view_frame, text='Application scaling:')
         self.scale_label.pack(padx=10)
         scale_values = ['75%', '100%', '125%', '150%', '200%']
-        self.scale_optionmenu = ctk.CTkOptionMenu(view_frame, values=scale_values, command=self.change_scaling)
-        self.scale_optionmenu.set(master.scaling)
-        self.scale_optionmenu.pack(padx=10, pady=10)
+        self.scale_option_menu = ctk.CTkOptionMenu(view_frame, values=scale_values, command=self.change_scaling)
+        self.scale_option_menu.set(master.scaling)
+        self.scale_option_menu.pack(padx=10, pady=10)
 
         ctk.CTkLabel(view_frame, text='').pack()
         self.theme_label = ctk.CTkLabel(view_frame, text='Theme:')
         self.theme_label.pack(padx=10)
-        self.theme_optionmenu = ctk.CTkOptionMenu(view_frame, values=['Light', 'Dark', 'System'], command=self.change_theme)
-        self.theme_optionmenu.set(master.theme)
-        self.theme_optionmenu.pack(padx=10, pady=10)
+        self.theme_option_menu = ctk.CTkOptionMenu(view_frame, values=['Light', 'Dark', 'System'], command=self.change_theme)
+        self.theme_option_menu.set(master.theme)
+        self.theme_option_menu.pack(padx=10, pady=10)
 
         ctk.CTkLabel(view_frame, text='').pack()
         self.fullscreen_label = ctk.CTkLabel(view_frame, text='Fullscreen:')
         self.fullscreen_label.pack(padx=10)
-        self.fullscreen_optionmenu = ctk.CTkOptionMenu(view_frame, values=['Off', 'On'], command=self.change_fullscreen)
-        self.fullscreen_optionmenu.set(master.fullscreen)
-        self.fullscreen_optionmenu.pack(padx=10, pady=10)
+        self.fullscreen_option_menu = ctk.CTkOptionMenu(view_frame, values=['Off', 'On'], command=self.change_fullscreen)
+        self.fullscreen_option_menu.set(master.fullscreen)
+        self.fullscreen_option_menu.pack(padx=10, pady=10)
 
         password_frame = ctk.CTkFrame(main_frame)
-        password_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nswe')
+        password_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
         ctk.CTkLabel(password_frame, text='Change Password', font=('Helvetica', 20)).pack(padx=10, pady=10)
 
@@ -66,7 +66,7 @@ class SettingsFrame(ctk.CTkFrame):
         self.change_password_button.pack(padx=10, pady=10)
 
         bottom_frame = ctk.CTkFrame(main_frame)
-        bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='nswe')
+        bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
         ctk.CTkLabel(bottom_frame, text='').pack()
         self.back_button = ctk.CTkButton(bottom_frame, text='Back', command=self.create_main_frame)

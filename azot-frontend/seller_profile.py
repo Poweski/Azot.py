@@ -15,7 +15,7 @@ class ProfileFrame(ctk.CTkFrame):
         top_frame = ctk.CTkFrame(main_frame)
         top_frame.pack(fill='both', expand=True, pady=20, padx=20)
 
-        profile_label = ctk.CTkLabel(top_frame, text='Profile', font=('Helvetica', 24))
+        profile_label = ctk.CTkLabel(top_frame, text='Profile', font=('Helvetica', 24, 'bold'))
         profile_label.pack(pady=20)
 
         ctk.CTkLabel(top_frame, text='Organization').pack(pady=5)
@@ -90,7 +90,7 @@ class ProfileFrame(ctk.CTkFrame):
             self.email_entry.configure(state='disabled')
 
     def save_profile(self):
-        id = self.master.user.id
+        _id = self.master.user.id
         phone = self.phone_entry.get()
         address = self.address_entry.get()
         organization = self.organization_entry.get()
@@ -101,15 +101,15 @@ class ProfileFrame(ctk.CTkFrame):
             'phone': phone
         }
 
-        url = f'http://localhost:8080/api/seller/{id}'
+        url = f'http://localhost:8080/api/seller/{_id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:
-            # TODO actualization issues
-            self.master.user.phone = phone
-            self.master.user.address = address
-            self.master.user.organization = organization
+            self.master.user.seller_info.phone = phone
+            self.master.user.seller_info.address = address
+            self.master.user.seller_info.organization = organization
             InfoDialog(self, title='Success', message='Profile updated successfully').show()
         else:
-            self.load_profile()
             ErrorDialog(self, message='Failed to update profile!').show()
+
+        self.load_profile()

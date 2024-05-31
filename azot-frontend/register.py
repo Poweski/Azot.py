@@ -1,6 +1,7 @@
 import requests
 from classes import *
 from utils import *
+import threading
 
 
 class RegistrationFrame(ctk.CTkFrame):
@@ -11,7 +12,7 @@ class RegistrationFrame(ctk.CTkFrame):
         window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
 
-        ctk.CTkLabel(self, text='Register', font=('Helvetica', 20)).pack(pady=10)
+        ctk.CTkLabel(self, text='Register', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
         self.tabview = ctk.CTkTabview(self)
         self.tabview.pack(padx=10, pady=10, fill='both', expand=True)
@@ -55,16 +56,18 @@ class RegistrationFrame(ctk.CTkFrame):
             self.seller_confirm_password_entry = confirm_password_entry
 
     def register_client(self):
-        self.register('client')
+        thread = threading.Thread(target=self.register, args=('client',))
+        thread.start()
 
     def register_seller(self):
-        self.register('seller')
+        thread = threading.Thread(target=self.register, args=('seller',))
+        thread.start()
 
     def register(self, user_type):
         email, password, confirm_password = self.get_registration_entries(user_type)
 
         if password != confirm_password:
-            self.show_error_dialog('Passwords do not match!')
+            self.master.after(0, self.show_error_dialog, 'Passwords do not match!')
             return
 
         url = f'http://localhost:8080/api/{user_type}/register'
@@ -72,9 +75,9 @@ class RegistrationFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            self.handle_successful_registration(response.json(), user_type, email, password)
+            self.master.after(0, self.handle_successful_registration, response.json(), user_type, email, password)
         else:
-            self.show_error_dialog('Registration failed!')
+            self.master.after(0, self.show_error_dialog, 'Registration failed!')
 
     def get_registration_entries(self, user_type):
         if user_type == 'client':
@@ -84,11 +87,12 @@ class RegistrationFrame(ctk.CTkFrame):
 
     def handle_successful_registration(self, user_data, user_type, email, password):
         if user_type == 'seller':
-            self.master.user = Seller(id=user_data.get('id'), email=email, password=password)
+            self.master.user = Seller(id=user_data.get('id'), email=email, password=password, products=[])
             self.master.create_seller_main_frame()
         else:
             self.master.user = Client(id=user_data.get('id'), email=email, password=password)
             self.master.create_client_main_frame()
 
     def show_error_dialog(self, message):
-        ErrorDialog(self, message=message).show()
+        error = ErrorDialog(self, message=message)
+        error.show()

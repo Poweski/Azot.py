@@ -13,11 +13,10 @@ class MainMenuFrame(ctk.CTkFrame):
         main_frame.pack(fill='both', expand=True)
 
         left_frame = ctk.CTkFrame(main_frame, corner_radius=0)
-        left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nswe')
-        ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20)).pack(padx=20, pady=10)
+        left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nsew')
+        ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Profile', command=master.create_seller_profile_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Add Product', command=master.create_add_product_frame).pack(padx=20, pady=10)
-        ctk.CTkButton(left_frame, text='Messages', command=master.create_messages_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Orders', command=master.create_orders_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Settings', command=master.create_settings_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Log Out', command=self.log_out).pack(padx=20, pady=10)
@@ -25,7 +24,7 @@ class MainMenuFrame(ctk.CTkFrame):
 
         top_frame = ctk.CTkFrame(main_frame)
         top_frame.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
-        ctk.CTkLabel(top_frame, text='Welcome to Azot!', font=('Helvetica', 20)).pack(pady=10)
+        ctk.CTkLabel(top_frame, text='Welcome to Azot!', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
         offers_frame = ctk.CTkFrame(main_frame, fg_color='#313335')
         offers_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')

@@ -1,5 +1,6 @@
 import requests
 from utils import *
+from classes import *
 
 
 class AddProductFrame(ctk.CTkFrame):
@@ -16,7 +17,7 @@ class AddProductFrame(ctk.CTkFrame):
         title_frame = ctk.CTkFrame(main_frame)
         title_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
-        ctk.CTkLabel(title_frame, text='Add Product', font=('Helvetica', 20)).pack(pady=10)
+        ctk.CTkLabel(title_frame, text='Add Product', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
         left_frame = ctk.CTkFrame(main_frame)
         left_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -80,7 +81,12 @@ class AddProductFrame(ctk.CTkFrame):
             }
 
             response = requests.post(url, json=data)
+            print(response, data)
             if response.status_code == 200:
+                # _id = response.content.id
+                # product = Product( name, price, description, image, items_available, tags, self.master.user)
+                # self.master.user.products.append(product)
+
                 InfoDialog(self, title='Success', message='Product added successfully').show()
             else:
                 ErrorDialog(self, message='Failed to add product!').show()

@@ -15,7 +15,7 @@ class ProfileFrame(ctk.CTkFrame):
         top_frame = ctk.CTkFrame(main_frame)
         top_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
-        profile_label = ctk.CTkLabel(top_frame, text='Profile', font=('Helvetica', 24))
+        profile_label = ctk.CTkLabel(top_frame, text='Profile', font=('Helvetica', 24, 'bold'))
         profile_label.pack(pady=20)
 
         info_frame = ctk.CTkFrame(main_frame)
@@ -83,7 +83,7 @@ class ProfileFrame(ctk.CTkFrame):
 
     def top_up(self):
         try:
-            value = InputFrame(self, title='Recharge', message='Enter the amount:').show()
+            value = InputDialog(self, title='Recharge', message='Enter the amount:').show()
             balance_amount = float(value)
             client_id = self.master.user.id
             data = {'balance': balance_amount}
@@ -91,8 +91,11 @@ class ProfileFrame(ctk.CTkFrame):
             response = requests.post(url, json=data)
 
             if response.status_code == 200:
+                self.master.user.client_info.balance += balance_amount
+                self.balance_entry.configure(state='normal')
                 self.balance_entry.delete(0, 'end')
-                self.balance_entry.insert(0, f'{balance_amount}')
+                self.balance_entry.insert(0, f'{self.master.user.client_info.balance}')
+                self.balance_entry.configure(state='disabled')
                 ErrorDialog(self, title='Success', message='Balance topped up successfully').show()
             else:
                 ErrorDialog(self, message='Failed to top up balance!').show()
@@ -119,9 +122,13 @@ class ProfileFrame(ctk.CTkFrame):
         self.surname_entry.configure(state=state)
         self.phone_entry.configure(state=state)
         self.address_entry.configure(state=state)
+        self.balance_entry.configure(state=state)
+        self.id_entry.configure(state=state)
+        self.email_entry.configure(state=state)
 
     def load_profile(self):
         try:
+            self.enable_buttons(True)
             self.id_entry.insert(0, f'{self.master.user.id}')
             self.email_entry.insert(0, f'{self.master.user.email}')
             client_info = self.master.user.client_info
@@ -141,11 +148,9 @@ class ProfileFrame(ctk.CTkFrame):
                 self.balance_entry.insert(0, f'{client_info.balance}')
 
         except requests.exceptions.RequestException as e:
-            error = ErrorDialog(self, message=f'Failed to load profile: {e}!')
-            error.show()
+            ErrorDialog(self, message=f'Failed to load profile: {e}!').show()
         finally:
-            self.id_entry.configure(state='disabled')
-            self.email_entry.configure(state='disabled')
+            self.enable_buttons(False)
 
     def save_profile(self):
         id = self.master.user.id
@@ -165,12 +170,12 @@ class ProfileFrame(ctk.CTkFrame):
         response = requests.put(url, json=data)
 
         if response.status_code == 200:
-            # TODO actualization issues
-            self.master.user.phone = phone
-            self.master.user.address = address
-            self.master.user.name = name
-            self.master.user.surname = surname
+            self.master.user.client_info.phone = phone
+            self.master.user.client_info.address = address
+            self.master.user.client_info.name = name
+            self.master.user.client_info.surname = surname
             InfoDialog(self, title='Success', message='Profile updated successfully').show()
         else:
-            self.load_profile()
             ErrorDialog(self, message='Failed to update profile!').show()
+
+        self.load_profile()
