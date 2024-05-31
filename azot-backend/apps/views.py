@@ -1,5 +1,5 @@
 import uuid
-
+from decimal import Decimal
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, NotAuthenticated
 from rest_framework.response import Response
@@ -142,9 +142,11 @@ class SellerChangeInfoView(APIView):
 class ClientAddBalanceView(APIView):
     def post(self, request, client_id):
         client = Client.objects.get(id=client_id)
-        if request.data['balance'] < 0:
+        added_balance = Decimal(request.data['balance'])
+        if added_balance < 0:
             raise ValidationError()
-        client.client_info.balance += request.data['balance']
+
+        client.client_info.balance += added_balance
         client.client_info.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
