@@ -1,5 +1,4 @@
 import requests
-from tkinter import messagebox
 from utils import *
 
 
@@ -8,59 +7,82 @@ class AddProductFrame(ctk.CTkFrame):
         super().__init__(master)
         self.master = master
 
-        window_size = adjust_window(350, 300, master)
+        window_size = adjust_window(800, 600, master)
         master.geometry(window_size)
 
-        ctk.CTkLabel(self, text='Add Product', font=('Helvetica', 20)).grid(row=0, column=1, pady=10)
+        main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
+        main_frame.pack(fill='both', expand=True)
 
-        ctk.CTkLabel(self, text='Name').grid(row=1, column=0, padx=10, pady=5)
-        self.product_name_entry = ctk.CTkEntry(self)
-        self.product_name_entry.grid(row=1, column=1, padx=10, pady=5)
+        title_frame = ctk.CTkFrame(main_frame)
+        title_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
-        ctk.CTkLabel(self, text='Price').grid(row=2, column=0, padx=10, pady=5)
-        self.product_price_entry = ctk.CTkEntry(self)
-        self.product_price_entry.grid(row=2, column=1, padx=10, pady=5)
+        ctk.CTkLabel(title_frame, text='Add Product', font=('Helvetica', 20)).pack(pady=10)
 
-        ctk.CTkLabel(self, text='Description').grid(row=3, column=0, padx=10, pady=5)
-        self.product_description_entry = ctk.CTkEntry(self)
-        self.product_description_entry.grid(row=3, column=1, padx=10, pady=5)
+        left_frame = ctk.CTkFrame(main_frame)
+        left_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-        ctk.CTkLabel(self, text='Image URL').grid(row=4, column=0, padx=10, pady=5)
-        self.product_image_entry = ctk.CTkEntry(self)
-        self.product_image_entry.grid(row=4, column=1, padx=10, pady=5)
+        ctk.CTkLabel(left_frame, text='Name').pack( padx=10, pady=5)
+        self.product_name_entry = ctk.CTkEntry(left_frame, width=230)
+        self.product_name_entry.pack( padx=10, pady=5)
 
-        ctk.CTkLabel(self, text='Tags').grid(row=5, column=0, padx=10, pady=5)
-        self.product_tags_entry = ctk.CTkEntry(self)
-        self.product_tags_entry.grid(row=5, column=1, padx=10, pady=5)
+        ctk.CTkLabel(left_frame, text='Price').pack( padx=10, pady=5)
+        self.product_price_entry = ctk.CTkEntry(left_frame, width=230)
+        self.product_price_entry.pack( padx=10, pady=5)
 
-        ctk.CTkLabel(self, text='Items Available').grid(row=6, column=0, padx=10, pady=5)
-        self.product_items_available_entry = ctk.CTkEntry(self)
-        self.product_items_available_entry.grid(row=6, column=1, padx=10, pady=5)
+        ctk.CTkLabel(left_frame, text='Items Available').pack( padx=10, pady=5)
+        self.product_items_available_entry = ctk.CTkEntry(left_frame, width=230)
+        self.product_items_available_entry.pack( padx=10, pady=5)
 
-        ctk.CTkButton(self, text='Add', command=self.add_product).grid(row=7, column=1, pady=10)
-        ctk.CTkButton(self, text='Back', command=master.create_main_frame).grid(row=8, column=1, pady=10)
+        ctk.CTkLabel(left_frame, text='Image URL').pack( padx=10, pady=5)
+        self.product_image_entry = ctk.CTkEntry(left_frame, width=230)
+        self.product_image_entry.pack( padx=10, pady=5)
+
+        bottom_frame = ctk.CTkFrame(main_frame)
+        bottom_frame.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+
+        ctk.CTkButton(bottom_frame, text='Add', command=self.add_product).pack(pady=10)
+        ctk.CTkButton(bottom_frame, text='Cancel', command=master.create_seller_main_frame).pack(pady=10)
+
+        right_frame = ctk.CTkFrame(main_frame)
+        right_frame.grid(row=1, column=1, rowspan=2, padx=10, pady=10, sticky='nsew')
+
+        ctk.CTkLabel(right_frame, text='Description').pack(padx=10, pady=5)
+        self.product_description_entry = ctk.CTkTextbox(right_frame, height=250, width=300)
+        self.product_description_entry.pack(padx=10, pady=5)
+
+        ctk.CTkLabel(right_frame, text='Tags').pack(padx=10, pady=5)
+        self.product_tags_entry = ctk.CTkTextbox(right_frame, height=100, width=300)
+        self.product_tags_entry.pack(padx=10, pady=5)
+
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
+        main_frame.rowconfigure(0, weight=0)
+        main_frame.rowconfigure(1, weight=1)
+        main_frame.rowconfigure(2, weight=0)
 
     def add_product(self):
-        name = self.product_name_entry.get()
-        price = float(self.product_price_entry.get())
-        description = self.product_description_entry.get()
-        image = self.product_image_entry.get()
-        tags = self.product_tags_entry.get()
-        items_available = int(self.product_items_available_entry.get())
+        try:
+            name = self.product_name_entry.get()
+            price = float(self.product_price_entry.get())
+            description = self.product_description_entry.get('1.0', 'end-1c')
+            image = self.product_image_entry.get()
+            tags = self.product_tags_entry.get('1.0', 'end-1c')
+            items_available = int(self.product_items_available_entry.get())
 
-        url = f'http://localhost:8080/api/seller/{self.master.active_user_id}/product'
-        data = {
-            'name': name,
-            'price': price,
-            'description': description,
-            'image': image,
-            'tags': tags,
-            'items_available': items_available
-        }
+            url = f'http://localhost:8080/api/seller/{self.master.user.id}/product'
+            data = {
+                'name': name,
+                'price': price,
+                'description': description,
+                'image': image,
+                'tags': tags,
+                'items_available': items_available
+            }
 
-        response = requests.post(url, json=data)
-        if response.status_code == 200:
-            messagebox.showinfo('Success', 'Product added successfully')
-            self.master.create_main_frame()
-        else:
-            messagebox.showerror('Error', 'Failed to add product')
+            response = requests.post(url, json=data)
+            if response.status_code == 200:
+                InfoDialog(self, title='Success', message='Product added successfully').show()
+            else:
+                ErrorDialog(self, message='Failed to add product!').show()
+        except Exception as err:
+            ErrorDialog(self, message=f'Error occurred: {err}').show()

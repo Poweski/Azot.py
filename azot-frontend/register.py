@@ -44,10 +44,12 @@ class RegistrationFrame(ctk.CTkFrame):
         ctk.CTkButton(tab, text='Back to Login', command=back_command).grid(row=6, column=0, columnspan=2, pady=10)
 
         if user_type == 'client':
+            self.master.user_type = 'client'
             self.client_email_entry = email_entry
             self.client_password_entry = password_entry
             self.client_confirm_password_entry = confirm_password_entry
         else:
+            self.master.user_type = 'seller'
             self.seller_email_entry = email_entry
             self.seller_password_entry = password_entry
             self.seller_confirm_password_entry = confirm_password_entry

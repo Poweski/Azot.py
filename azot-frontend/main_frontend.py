@@ -16,13 +16,15 @@ class App(ctk.CTk):
         self.title('Azot')
         window_size = adjust_window(350, 350, self)
         self.geometry(window_size)
-        self.resizable(False, False)
+        # self.resizable(False, False)
         ctk.set_appearance_mode('dark')
         ctk.set_default_color_theme('dark-blue')
         self.scaling = '100%'
         self.theme = 'Dark'
+        self.fullscreen = 'Off'
 
         self.user = None
+        self.user_type = None
 
         self.login_frame = None
         self.registration_frame = None
@@ -81,9 +83,6 @@ class App(ctk.CTk):
         pass
 
     def create_orders_frame(self):
-        pass
-
-    def create_announcements_frame(self):
         pass
 
     def create_settings_frame(self):
