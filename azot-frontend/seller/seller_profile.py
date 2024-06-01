@@ -53,11 +53,11 @@ class ProfileFrame(ctk.CTkFrame):
         self.edit_mode = not self.edit_mode
         self.enable_edit_fields(self.edit_mode)
         if self.edit_mode:
-            self.edit_button.configure(text='Submit')
+            self.edit_button.configure(text='Submit', fg_color='red', hover_color='#8B0000')
             self.back_button.configure(state='disabled')
         else:
             self.save_profile()
-            self.edit_button.configure(text='Edit')
+            self.edit_button.configure(text='Edit', fg_color='#1f538d', hover_color='#14375e')
             self.back_button.configure(state='normal')
 
     def enable_edit_fields(self, state):

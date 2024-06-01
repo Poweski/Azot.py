@@ -78,6 +78,7 @@ class LoginFrame(ctk.CTkFrame):
     def create_seller_user(self, user_data, email, password):
         seller_info_data = user_data.get('seller_info')
         seller_info = None
+
         if seller_info_data:
             seller_info = SellerInfo(
                 organization=seller_info_data.get('organization'),

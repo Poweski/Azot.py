@@ -1,10 +1,10 @@
 import customtkinter as ctk
 from shared import utils, classes
-import threading
-import requests
 from functools import partial
 from urllib.request import urlopen
 from PIL import Image
+import threading
+import requests
 import io
 
 
@@ -17,16 +17,23 @@ class MainMenuFrame(ctk.CTkFrame):
         self.create_main_frame()
         self.create_left_frame()
         self.create_top_frame()
+        self.create_your_offers_frame()
         self.create_offers_frame()
 
-        if not self.master.viewed_products:
-            threading.Thread(target=self.get_products).start()
+        if len(self.master.user.products) == 0:
+            self.create_seller_products()
         else:
-            self.display_products(self.master.viewed_products)
+            thread = threading.Thread(target=self.display_products)
+            thread.start()
 
     def setup_window(self):
         window_size = utils.adjust_window(800, 600, self.master)
         self.master.geometry(window_size)
+
+    def create_your_offers_frame(self):
+        your_offers_frame = ctk.CTkFrame(self.main_frame)
+        your_offers_frame.grid(row=1, column=1, padx=10, pady=5, sticky='ew')
+        ctk.CTkLabel(your_offers_frame, text='Your products:', font=('Helvetica', 16)).pack()
 
     def create_main_frame(self):
         self.main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
@@ -34,7 +41,8 @@ class MainMenuFrame(ctk.CTkFrame):
         self.main_frame.columnconfigure(0, weight=0)
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.rowconfigure(0, weight=0)
-        self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.rowconfigure(1, weight=0)
+        self.main_frame.rowconfigure(2, weight=1)
 
     def create_left_frame(self):
         left_frame = ctk.CTkFrame(self.main_frame, corner_radius=0)
@@ -60,20 +68,33 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(top_frame, text='Welcome to Azot!', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
     def create_offers_frame(self):
-        self.offers_frame = ctk.CTkFrame(self.main_frame, fg_color='#313335')
-        self.offers_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
-        products_label = (ctk.CTkLabel(self.offers_frame, text='Your products:', font=('Helvetica', 18)))
-        products_label.grid(row=0, column=0,columnspan=4, padx=5, pady=10)
+        self.offers_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color='#313335')
+        self.offers_frame.grid(row=2, column=1, padx=10, pady=5, sticky='nsew')
 
-    def show_error(self):
-        utils.ErrorDialog(self, message='Failed to download product').show()
+    def create_seller_products(self):
+        try:
+            thread = threading.Thread(target=self.fetch_products)
+            thread.start()
+        except requests.RequestException:
+            utils.ErrorDialog(self, message='Failed to download product').show()
 
-    def display_no_results(self):
-        results_label = ctk.CTkLabel(self.offers_frame, text='No Results', font=('Helvetica', 18))
-        results_label.grid(row=1, column=0, columnspan=4, padx=5, pady=10)
+    def fetch_products(self):
+        try:
+            response = requests.get(f'http://localhost:8080/api/seller/{self.master.user.id}/product')
+            products_list = response.json().get('content')
+
+            products = []
+            for product_data in products_list:
+                products.append(self.create_product(product_data))
+
+            self.master.user.products = products
+
+            self.master.after(0, self.display_products)
+        except requests.RequestException:
+            self.master.after(0, lambda: utils.ErrorDialog(self, message='Failed to download product').show())
 
     def create_product(self, product_info):
-        product = classes.Product(
+        return classes.Product(
             product_info['id'],
             product_info['name'],
             product_info['price'],
@@ -81,33 +102,16 @@ class MainMenuFrame(ctk.CTkFrame):
             product_info['image'],
             product_info['items_available'],
             product_info['tags'],
-            product_info['owner']
+            self.master.user
         )
-        self.master.user.products.append(product)
-        return product
 
-    def get_products(self):
-        url = f'http://localhost:8080/api/seller/{self.master.user.id}/product'
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            products = response.json().get('content')
-            self.master.after(0, self.display_products, products)
-        except requests.RequestException:
-            self.master.after(0, self.display_no_results)
-
-    def display_products(self, products):
-        if not products:
-            self.display_no_results()
-            return
-
+    def display_products(self):
         row, column = 1, 0
-        for product_data in products:
+        for product in self.master.user.products:
             if column > 3:
                 row += 1
                 column = 0
 
-            product = self.create_product(product_data)
             self.create_product_frame(product, row, column)
             column += 1
 
@@ -122,8 +126,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f"Price: ${product.price:.2f}").pack()
         ctk.CTkLabel(product_frame, text=f"Items available: {product.items_available}").pack()
         edit_command = partial(self.edit_product, product.id)
-        ctk.CTkButton(product_frame, text='Edit', command=edit_command, fg_color='#382449',
-                      hover_color='#301934').pack()
+        ctk.CTkButton(product_frame, text='Edit', command=edit_command).pack()
 
     def create_image_label(self, image_url, frame):
         image_data = urlopen(image_url).read()

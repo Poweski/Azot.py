@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from .classes import Product
 
 
 def adjust_window(window_width, window_height, app):
@@ -9,6 +10,19 @@ def adjust_window(window_width, window_height, app):
     y = (screen_height // 2) - (window_height // 2)
 
     return f'{window_width}x{window_height}+{x}+{y}'
+
+
+def create_product(product_info):
+    return Product(
+        product_info['id'],
+        product_info['name'],
+        product_info['price'],
+        product_info['description'],
+        product_info['image'],
+        product_info['items_available'],
+        product_info['tags'],
+        product_info['owner']
+    )
 
 
 class ErrorDialog(ctk.CTkToplevel):

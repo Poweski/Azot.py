@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import requests
-from shared import utils
+from shared import utils, classes
 
 
 class AddProductFrame(ctk.CTkFrame):
@@ -105,7 +105,24 @@ class AddProductFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            # TODO add product to sellers array
+            response_json = response.json()
+            product_id = response_json['content']['id']
+            self.create_product(data, product_id)
             utils.InfoDialog(self, title='Success', message='Product added successfully').show()
+            self.master.create_seller_main_frame()
         else:
             utils.ErrorDialog(self, message='Failed to add product!').show()
+
+    def create_product(self, product_info, product_id):
+        self.master.user.products.append(
+            classes.Product(
+                product_id,
+                product_info['name'],
+                product_info['price'],
+                product_info['description'],
+                product_info['image'],
+                product_info['items_available'],
+                product_info['tags'],
+                self.master.user
+            )
+        )

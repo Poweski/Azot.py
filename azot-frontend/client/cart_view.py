@@ -5,6 +5,8 @@ from urllib.request import urlopen
 from PIL import Image
 import io
 
+# TODO in production
+
 
 class CartView(ctk.CTkFrame):
     def __init__(self, master, orders):

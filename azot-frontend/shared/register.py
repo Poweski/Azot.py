@@ -87,10 +87,10 @@ class RegistrationFrame(ctk.CTkFrame):
 
     def handle_successful_registration(self, user_data, user_type, email, password):
         if user_type == 'seller':
-            self.master.user = Seller(id=user_data.get('id'), email=email, password=password, products=[])
+            self.master.user = Seller(seller_id=user_data.get('id'), email=email, password=password, products=[])
             self.master.create_seller_main_frame()
         else:
-            self.master.user = Client(id=user_data.get('id'), email=email, password=password)
+            self.master.user = Client(client_id=user_data.get('id'), email=email, password=password)
             self.master.create_client_main_frame()
 
     def show_error_dialog(self, message):

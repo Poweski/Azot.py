@@ -3,6 +3,17 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
+# TODO client and seller menu
+# TODO error after registering a new user when entering the profile
+# TODO changing the number of items after purchase
+# TODO add purchases in client
+# TODO add orders in seller
+# TODO seller rating and reviews
+# TODO product rating and reviews
+# TODO extend error handling
+# TODO registration and password change experimental features
+# TODO write readme asap
+
 
 class App(ctk.CTk):
     def __init__(self):
@@ -103,6 +114,7 @@ class App(ctk.CTk):
             widget.destroy()
 
     def quit(self):
+        self.viewed_products.clear()
         self.destroy()
 
 
