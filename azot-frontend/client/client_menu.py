@@ -19,16 +19,14 @@ class MainMenuFrame(ctk.CTkFrame):
         main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
         main_frame.pack(fill='both', expand=True)
 
-        balance = self.master.user.client_info.balance
-
         left_frame = ctk.CTkFrame(main_frame, corner_radius=0)
         left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nswe')
         ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
         ctk.CTkLabel(left_frame, text='Your balance:', font=('Helvetica', 15)).pack(padx=20, pady=10)
-        ctk.CTkLabel(left_frame, text=f'{balance}', font=('Helvetica', 15)).pack(padx=20, pady=10)
+        ctk.CTkLabel(left_frame, text=f'{self.master.user.client_info.balance} $', font=('Helvetica', 15)).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Profile', command=master.create_client_profile_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Cart', command=master.create_cart_frame).pack(padx=20, pady=10)
-        ctk.CTkButton(left_frame, text='Purchases', command=master.create_orders_frame).pack(padx=20, pady=10)
+        ctk.CTkButton(left_frame, text='Purchases', command=master.create_purchases_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Settings', command=master.create_settings_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Log Out', command=self.log_out).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Close App', command=self.quit).pack(padx=20, pady=10)
@@ -39,8 +37,8 @@ class MainMenuFrame(ctk.CTkFrame):
 
         search_frame = ctk.CTkFrame(main_frame)
         search_frame.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
-        search_entry = ctk.CTkEntry(search_frame, placeholder_text='Product name')
-        search_entry.grid(column=1, row=0, sticky='ew')
+        self.search_entry = ctk.CTkEntry(search_frame, placeholder_text='What are you looking for?')
+        self.search_entry.grid(column=1, row=0, sticky='ew')
         search_button = ctk.CTkButton(search_frame, text='Search', command=self.search)
         search_button.grid(column=2, row=0, padx=5, pady=5)
 
@@ -58,7 +56,7 @@ class MainMenuFrame(ctk.CTkFrame):
         self.offers_frame.rowconfigure(1, weight=1)
         self.offers_frame.rowconfigure(2, weight=1)
 
-        self.shuffle_offers()
+        self.display_offers()
 
         main_frame.columnconfigure(0, weight=0)
         main_frame.columnconfigure(1, weight=1)
@@ -69,6 +67,41 @@ class MainMenuFrame(ctk.CTkFrame):
         search_frame.columnconfigure(0, weight=0)
         search_frame.columnconfigure(1, weight=1)
         search_frame.columnconfigure(2, weight=0)
+
+    def display_offers(self):
+        if not self.master.viewed_products:
+            self.shuffle_offers()
+        else:
+            for i in range(2):
+                for j in range(4):
+                    self.create_product_view2(i + 1, j)
+
+    def create_product_view2(self, row, column):
+        product_frame = ctk.CTkFrame(self.offers_frame)
+        product_frame.grid(row=row, column=column, padx=5, pady=5, sticky='nsew')
+
+        placeholder_label = ctk.CTkLabel(product_frame, text='Loading...')
+        placeholder_label.pack()
+
+        thread = threading.Thread(target=self.update_product_view2, args=(product_frame, placeholder_label, row, column))
+        thread.start()
+
+    def update_product_view2(self, product_frame, placeholder_label, row, column):
+        placeholder_label.pack_forget()
+        product = self.master.viewed_products[4 * (row - 1) + column]
+        ctk.CTkLabel(product_frame, text=f'{product.name}').pack()
+        image_url = product.image
+        image_data = urlopen(image_url).read()
+        image_pil = Image.open(io.BytesIO(image_data))
+        new_size = (80, 80)
+        image_pil_resized = image_pil.resize(new_size, Image.LANCZOS)
+        image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
+        image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
+        image_label.pack()
+        ctk.CTkLabel(product_frame, text=f'Price: ${product.price:.2f}').pack()
+        ctk.CTkLabel(product_frame, text=f'Items available: {product.items_available}').pack()
+        check_command = partial(self.check_product, product.id)
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
 
     def shuffle_offers(self):
         self.master.viewed_products.clear()
@@ -113,7 +146,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f'Price: ${product_data['price']:.2f}').pack()
         ctk.CTkLabel(product_frame, text=f'Items available: {product_data['items_available']}').pack()
         check_command = partial(self.check_product, product_id)
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='#382449', hover_color='#301934').pack()
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
 
     def show_error(self):
         utils.ErrorDialog(self, message='Failed to download product').show()
@@ -122,7 +155,49 @@ class MainMenuFrame(ctk.CTkFrame):
         self.master.create_product_frame(product_id)
 
     def search(self):
-        pass
+        self.master.viewed_products.clear()
+        phrase = self.search_entry.get()
+        data = {'request': phrase}
+        url = 'http://localhost:8080/api/product'
+        response = requests.post(url, json=data)
+
+        if response.status_code == 200:
+            products_list = response.json().get('content')
+            row, column = 1, 0
+            for product in products_list:
+                if column > 3:
+                    if row > 2:
+                        return
+                    row += 1
+                    column = 0
+
+                product_frame = ctk.CTkFrame(self.offers_frame)
+                product_frame.grid(row=row, column=column, padx=5, pady=5, sticky='nsew')
+
+                placeholder_label = ctk.CTkLabel(product_frame, text='Loading...')
+                placeholder_label.pack()
+
+                thread = threading.Thread(target=self.update_product_view3, args=(product_frame, placeholder_label, product))
+                thread.start()
+        else:
+            self.show_error()
+
+    def update_product_view3(self, product_frame, placeholder_label, product):
+        self.master.viewed_products.append(utils.create_product(product))
+        placeholder_label.pack_forget()
+        ctk.CTkLabel(product_frame, text=f'{product['name']}').pack()
+        image_url = product['image']
+        image_data = urlopen(image_url).read()
+        image_pil = Image.open(io.BytesIO(image_data))
+        new_size = (80, 80)
+        image_pil_resized = image_pil.resize(new_size, Image.LANCZOS)
+        image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
+        image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
+        image_label.pack()
+        ctk.CTkLabel(product_frame, text=f'Price: ${product['price']:.2f}').pack()
+        ctk.CTkLabel(product_frame, text=f'Items available: {product['items_available']}').pack()
+        check_command = partial(self.check_product, product['id'])
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
 
     def log_out(self):
         dialog = utils.ConfirmDialog(self, title='Log Out', message='Are you sure you want to log out?')

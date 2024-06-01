@@ -3,7 +3,6 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
-# TODO client and seller menu
 # TODO error after registering a new user when entering the profile
 # TODO changing the number of items after purchase
 # TODO add purchases in client
