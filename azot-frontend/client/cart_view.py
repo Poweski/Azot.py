@@ -1,17 +1,18 @@
 import requests
-from utils import *
+import customtkinter as ctk
+from shared import utils
 from urllib.request import urlopen
 from PIL import Image
 import io
 
 
-class ProductView(ctk.CTkFrame):
-    def __init__(self, master, product):
+class CartView(ctk.CTkFrame):
+    def __init__(self, master, orders):
         super().__init__(master)
         self.master = master
-        self.product = product
+        self.orders = orders
 
-        window_size = adjust_window(800, 600, master)
+        window_size = utils.adjust_window(800, 600, master)
         master.geometry(window_size)
 
         main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
@@ -19,7 +20,7 @@ class ProductView(ctk.CTkFrame):
 
         label_frame = ctk.CTkFrame(main_frame)
         label_frame.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
-        name_label = ctk.CTkLabel(label_frame, text=f'Product Name: {self.product.name}', font=('Helvetica', 16, 'bold'))
+        name_label = ctk.CTkLabel(label_frame, text='Cart', font=('Helvetica', 16, 'bold'))
         name_label.pack(padx=5, pady=10)
 
         left_frame = ctk.CTkFrame(main_frame)
@@ -73,7 +74,7 @@ class ProductView(ctk.CTkFrame):
 
     def add_to_cart(self):
         try:
-            quantity = InputDialog(self, title='Add to cart', message='Enter the amount:').show()
+            quantity = utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show()
             url = f'http://localhost:8080/api/client/{self.master.user.id}/cart'
             data = {
                 "orders": [
@@ -85,9 +86,9 @@ class ProductView(ctk.CTkFrame):
             response = requests.post(url, json=data)
 
             if response.status_code == 200:
-                InfoDialog(self, title='Success', message='Product added to cart').show()
+                utils.InfoDialog(self, title='Success', message='Product added to cart').show()
             else:
-                ErrorDialog(self, message='Failed to add product to cart!').show()
+                utils.ErrorDialog(self, message='Failed to add product to cart!').show()
 
         except Exception as err:
-            ErrorDialog(self, message=f'Error occurred: {err}').show()
+            utils.ErrorDialog(self, message=f'Error occurred: {err}').show()

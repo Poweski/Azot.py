@@ -1,6 +1,6 @@
+from .classes import *
+from .utils import *
 import requests
-from classes import *
-from utils import *
 import threading
 
 

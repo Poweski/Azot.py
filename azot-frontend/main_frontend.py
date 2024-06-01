@@ -1,13 +1,7 @@
-import seller_menu
-import client_menu
-import seller_profile
-import client_profile
-from product_view import ProductView
-from login import LoginFrame
-from register import RegistrationFrame
-from add_product import AddProductFrame
-from settings import SettingsFrame
-from utils import *
+from shared import *
+from client import *
+from seller import *
+import customtkinter as ctk
 
 
 class App(ctk.CTk):
@@ -15,7 +9,7 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title('Azot')
-        window_size = adjust_window(350, 350, self)
+        window_size = utils.adjust_window(350, 350, self)
         self.geometry(window_size)
         ctk.set_appearance_mode('dark')
         ctk.set_default_color_theme('dark-blue')
@@ -39,12 +33,12 @@ class App(ctk.CTk):
 
     def create_login_frame(self):
         self.clear_frame()
-        self.login_frame = LoginFrame(self)
+        self.login_frame = login.LoginFrame(self)
         self.login_frame.pack(fill='both', expand=True)
 
     def create_registration_frame(self):
         self.clear_frame()
-        self.registration_frame = RegistrationFrame(self)
+        self.registration_frame = register.RegistrationFrame(self)
         self.registration_frame.pack(fill='both', expand=True)
 
     def create_seller_main_frame(self):
@@ -57,11 +51,6 @@ class App(ctk.CTk):
         self.main_frame = client_menu.MainMenuFrame(self)
         self.main_frame.pack(fill='both', expand=True)
 
-    def create_add_product_frame(self):
-        self.clear_frame()
-        self.add_product_frame = AddProductFrame(self)
-        self.add_product_frame.pack(fill='both', expand=True)
-
     def create_client_profile_frame(self):
         self.clear_frame()
         self.profile_frame = client_profile.ProfileFrame(self)
@@ -72,11 +61,19 @@ class App(ctk.CTk):
         self.profile_frame = seller_profile.ProfileFrame(self)
         self.profile_frame.pack(fill='both', expand=True)
 
-    def create_cart_frame(self):
-        pass
+    def create_add_product_frame(self):
+        self.clear_frame()
+        self.add_product_frame = add_product.AddProductFrame(self)
+        self.add_product_frame.pack(fill='both', expand=True)
 
-    def create_orders_frame(self):
-        pass
+    def create_edit_product_frame(self, product_id):
+        _product = None
+        for product in self.user.products:
+            if product_id == product.id:
+                _product = product
+        self.clear_frame()
+        self.product_frame = edit_product_view.EditProductView(self, _product)
+        self.product_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
         _product = None
@@ -84,12 +81,21 @@ class App(ctk.CTk):
             if product_id == product.id:
                 _product = product
         self.clear_frame()
-        self.product_frame = ProductView(self, _product)
+        self.product_frame = product_view.ProductView(self, _product)
         self.product_frame.pack(fill='both', expand=True)
+
+    def create_cart_frame(self):
+        pass
+
+    def create_orders_frame(self):
+        pass
+
+    def create_purchases_frame(self):
+        pass
 
     def create_settings_frame(self):
         self.clear_frame()
-        self.settings_frame = SettingsFrame(self)
+        self.settings_frame = settings.SettingsFrame(self)
         self.settings_frame.pack(fill='both', expand=True)
 
     def clear_frame(self):

@@ -1,6 +1,6 @@
+from .classes import *
+from .utils import *
 import requests
-from classes import *
-from utils import *
 import threading
 
 
@@ -85,7 +85,7 @@ class LoginFrame(ctk.CTkFrame):
                 address=seller_info_data.get('address')
             )
         return Seller(
-            id=user_data.get('id'),
+            seller_id=user_data.get('id'),
             email=email,
             password=password,
             seller_info=seller_info,
@@ -104,7 +104,7 @@ class LoginFrame(ctk.CTkFrame):
                 balance=client_info_data.get('balance')
             )
         return Client(
-            id=user_data.get('id'),
+            client_id=user_data.get('id'),
             email=email,
             password=password,
             client_info=client_info
