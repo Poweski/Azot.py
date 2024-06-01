@@ -125,5 +125,5 @@ class SettingsFrame(ctk.CTkFrame):
         self.master.theme = value
 
     def change_password(self):
-        # TODO: Implement password change logic and settings bugs
+        # TODO change password
         pass

@@ -3,18 +3,24 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
-# TODO error after registering a new user when entering the profile
-# TODO changing the number of items after purchase
+# TODO add cart
 # TODO add purchases in client
 # TODO add orders in seller
 # TODO seller rating and reviews
 # TODO product rating and reviews
+
+# TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
+# TODO bug: register a new user -> enter the profile -> crash
+
+# TODO write readme asap
 # TODO extend error handling
 # TODO registration and password change experimental features
-# TODO write readme asap
+# TODO implement password change logic and settings bugs
+# TODO changing the number of items after purchase (refresh button)
 
 
 class App(ctk.CTk):
+
     def __init__(self):
         super().__init__()
 

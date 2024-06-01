@@ -22,8 +22,10 @@ class MainMenuFrame(ctk.CTkFrame):
         left_frame = ctk.CTkFrame(main_frame, corner_radius=0)
         left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nswe')
         ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
+        ctk.CTkLabel(left_frame, text='').pack()
         ctk.CTkLabel(left_frame, text='Your balance:', font=('Helvetica', 15)).pack(padx=20, pady=10)
         ctk.CTkLabel(left_frame, text=f'{self.master.user.client_info.balance} $', font=('Helvetica', 15)).pack(padx=20, pady=10)
+        ctk.CTkLabel(left_frame, text='').pack()
         ctk.CTkButton(left_frame, text='Profile', command=master.create_client_profile_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Cart', command=master.create_cart_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Purchases', command=master.create_purchases_frame).pack(padx=20, pady=10)
@@ -155,7 +157,6 @@ class MainMenuFrame(ctk.CTkFrame):
         self.master.create_product_frame(product_id)
 
     def search(self):
-        self.master.viewed_products.clear()
         phrase = self.search_entry.get()
         data = {'request': phrase}
         url = 'http://localhost:8080/api/product'

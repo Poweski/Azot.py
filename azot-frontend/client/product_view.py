@@ -33,27 +33,45 @@ class ProductView(ctk.CTkFrame):
     def create_label_frame(self):
         label_frame = ctk.CTkFrame(self.main_frame)
         label_frame.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
-        name_label = ctk.CTkLabel(label_frame, text=f'Product Name: {self.product.name}',
-                                  font=('Helvetica', 16, 'bold'))
-        name_label.pack(padx=5, pady=10)
+        name_label = ctk.CTkLabel(label_frame, text='Product Name', font=('Helvetica', 16, 'bold'))
+        name_label.pack()
+        name_entry = ctk.CTkEntry(label_frame, justify='center', font=('Helvetica', 16, 'bold'))
+        name_entry.insert(0, self.product.name)
+        name_entry.configure(state='disabled')
+        name_entry.pack()
 
     def create_left_frame(self):
         left_frame = ctk.CTkFrame(self.main_frame)
         left_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
-        ctk.CTkLabel(left_frame, text='').pack()
-        self.create_label(left_frame, f'Price:\n${self.product.price:.2f}')
-        self.create_label(left_frame, f"Seller:\n{self.product.owner['seller_info']['organization']}")
+        self.create_label(left_frame, 'Price')
+        price_entry = ctk.CTkEntry(left_frame, justify='center')
+        price_entry.insert(0, f'{self.product.price:.2f}')
+        price_entry.configure(state='disabled', )
+        price_entry.pack()
 
+        self.create_label(left_frame, 'Seller')
+        seller_entry = ctk.CTkEntry(left_frame, justify='center')
+        seller_entry.insert(0, self.product.owner['seller_info']['organization'])
+        seller_entry.configure(state='disabled')
+        seller_entry.pack()
+
+        self.create_label(left_frame, 'Seller Rating')
         owner_avg_rating = self.product.owner.get('average_rating')
-        rating = f'Seller rating: {owner_avg_rating:.1f}' if owner_avg_rating else 'No Ratings'
-        self.create_label(left_frame, f'Seller Rating:\n{rating}')
+        rating = f'{owner_avg_rating:.1f}' if owner_avg_rating else 'No Ratings'
+        rating_entry = ctk.CTkEntry(left_frame, justify='center')
+        rating_entry.insert(0, rating)
+        rating_entry.configure(state='disabled')
+        rating_entry.pack()
 
-        self.create_label(left_frame, f'Items Available:\n{self.product.items_available}')
+        self.create_label(left_frame, 'Items Available')
+        items_available_entry = ctk.CTkEntry(left_frame, justify='center')
+        items_available_entry.insert(0, str(self.product.items_available))
+        items_available_entry.configure(state='disabled')
+        items_available_entry.pack()
 
         ctk.CTkLabel(left_frame, text='').pack()
-        ctk.CTkButton(left_frame, text='Add to cart', command=self.add_to_cart, fg_color='red',
-                      hover_color='#8B0000').pack(pady=10)
+        ctk.CTkButton(left_frame, text='Add to cart', command=self.add_to_cart, fg_color='red', hover_color='#8B0000').pack(pady=10)
         ctk.CTkButton(left_frame, text='Back', command=self.master.create_client_main_frame).pack(pady=10)
 
     def create_label(self, frame, text):
