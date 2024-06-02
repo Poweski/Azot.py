@@ -7,13 +7,14 @@ from rest_framework.views import exception_handler
 def custom_exception_handler(exc, context):
     try:
         exception_class = exc.__class__.__name__
+
         handlers = {
-            'NotAuthenticated': _handler_authentication_error,
             'IntegrityError': _handler_integrity_error,
             'ValidationError': _handler_validation_error,
             'DoesNotExist': _handler_not_found,
             'PurchaseError': _handler_purchase_error,
             'PermissionDenied': _handler_permission_denied,
+            'WrongPasswordError': _handler_wrong_password_error,
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
@@ -34,10 +35,6 @@ def _handler_validation_error(exc, context, res):
     return "Invalid data", 400
 
 
-def _handler_authentication_error(exc, context, res):
-    return "Password is incorrect", 400
-
-
 def _handler_integrity_error(exc, context, res):
     if 'Client' in context['view'].__class__.__name__:
         return "Client already exists", 400
@@ -48,17 +45,17 @@ def _handler_integrity_error(exc, context, res):
 
 
 def _handler_not_found(exc, context, res):
-    # if 'Client' in context['view'].__class__.__name__:
-    #     return "Client not found", 400
-    # elif 'Seller' in context['view'].__class__.__name__:
-    #     return "Seller not found", 400
-    # else:
-    return "Not found", 400
+    return exc, 400
+
 
 
 def _handler_purchase_error(exc, context, res):
-    return "Transaction failed.", 400
+    return exc.detail, 400
 
 
 def _handler_permission_denied(exc, context, res):
-    return "Permission denied", 400
+    return exc.detail, 400
+
+
+def _handler_wrong_password_error(exc, context, res):
+    return exc.detail, 400

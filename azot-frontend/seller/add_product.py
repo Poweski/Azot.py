@@ -110,8 +110,10 @@ class AddProductFrame(ctk.CTkFrame):
             self.create_product(data, product_id)
             utils.InfoDialog(self, title='Success', message='Product added successfully').show()
             self.master.create_seller_main_frame()
-        else:
+        elif response.status_code == 500:
             utils.ErrorDialog(self, message='Failed to add product!').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
 
     def create_product(self, product_info, product_id):
         self.master.user.products.append(

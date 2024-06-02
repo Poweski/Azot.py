@@ -2,12 +2,14 @@ import uuid
 
 from rest_framework import serializers
 from apps.models import Seller, SellerInfo
+from apps.utils.password_validator import validate_password
 
 class SellerInSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
 
     def create(self, validated_data):
+        validate_password(validated_data.get('password'))
         return Seller.objects.create(id=uuid.uuid4(),
                                      email=validated_data.get('email'),
                                      password=validated_data.get('password'),

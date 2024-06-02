@@ -97,6 +97,8 @@ class ProductView(ctk.CTkFrame):
 
             if response.status_code == 200:
                 utils.InfoDialog(self, title='Success', message='Product added to cart').show()
+            elif response.status_code == 400:
+                utils.ErrorDialog(self, message=response.json()['error']).show()
             else:
                 utils.ErrorDialog(self, message='Failed to add product to cart!').show()
         except ValueError:

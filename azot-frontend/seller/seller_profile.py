@@ -100,7 +100,9 @@ class ProfileFrame(ctk.CTkFrame):
             user.phone = data['phone']
             user.address = data['address']
             utils.InfoDialog(self, title='Success', message='Profile updated successfully').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
-            utils.ErrorDialog(self, message='Failed to update profile!').show()
+            utils.ErrorDialog(self, message='Failed to update profile').show()
 
         self.load_profile()

@@ -98,8 +98,10 @@ class EditProductView(ctk.CTkFrame):
                 self.master.user.products = [product for product in self.master.user.products if product.id != self.product.id]
                 utils.InfoDialog(self, title='Success', message='Product deleted successfully').show()
                 self.master.create_seller_main_frame()
+            elif response.status_code == 400:
+                utils.ErrorDialog(self, message=response.json()['error']).show()
             else:
-                utils.ErrorDialog(self, message='Failed to delete product!').show()
+                utils.ErrorDialog(self, message='Failed to delete product').show()
 
     def toggle_edit_mode(self):
         self.edit_mode = not self.edit_mode
@@ -190,8 +192,10 @@ class EditProductView(ctk.CTkFrame):
             self.image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
             self.image_label.configure(image=self.image_ctk)
             utils.InfoDialog(self, title='Success', message='Product data updated successfully').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json()['error']).show()
         else:
-            utils.ErrorDialog(self, message='Failed to update product data!').show()
+            utils.ErrorDialog(self, message='Failed to update product data').show()
 
         self.load_product()
 

@@ -132,6 +132,8 @@ class ProfileFrame(ctk.CTkFrame):
             client_info.phone = data['phone']
             client_info.address = data['address']
             utils.InfoDialog(self, title='Success', message='Profile updated successfully').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
             utils.ErrorDialog(self, message='Failed to update profile!').show()
 
@@ -150,8 +152,11 @@ class ProfileFrame(ctk.CTkFrame):
                 self.master.user.client_info.balance += balance_amount
                 self.update_balance_entry()
                 utils.InfoDialog(self, title='Success', message='Balance topped up successfully').show()
+            elif response.status_code == 400:
+                utils.ErrorDialog(self, message=response.json().get('error')).show()
             else:
                 utils.ErrorDialog(self, message='Failed to top up balance!').show()
+
         except ValueError:
             utils.ErrorDialog(self, message='Please enter a valid balance amount!').show()
 

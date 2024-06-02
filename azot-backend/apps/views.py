@@ -13,7 +13,7 @@ from apps.serializers.fromjson.seller_serializers import SellerInSerializer, Sel
 from apps.serializers.fromjson.review_serializers import ProductReviewInSerializer, SellerReviewInSerializer
 from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
 
-
+from apps.utils.password_validator import validate_password
 
 
 from apps.models import Client, Seller, Product, Purchase, Cart, Order, ProductReview, SellerReview
@@ -38,7 +38,7 @@ class ClientLoginView(APIView):
         if instance.password == client.validated_data['password']:
             return Response({'content': ClientOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
-            raise NotAuthenticated()
+            raise PermissionDenied("Wrong password")
 
 class SellerRegisterView(APIView):
     def post(self, request):
@@ -56,7 +56,7 @@ class SellerLoginView(APIView):
         if instance.password == seller.validated_data['password']:
             return Response({'content': SellerOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
-            raise NotAuthenticated()
+            raise PermissionDenied("Wrong password")
 
 
 class SellerAddProductView(APIView):
@@ -109,9 +109,9 @@ class ClientCartView(APIView):
         cart = client.cart
         for order in cart.order_set.all():
             if client.client_info.balance < order.product.price * order.quantity:
-                raise PurchaseError()
+                raise PurchaseError("Not enough money")
             if order.product.items_available < order.quantity:
-                raise PurchaseError()
+                raise PurchaseError("Not enough items available")
 
             client.client_info.balance -= order.product.price * order.quantity
             client.client_info.save()
@@ -169,7 +169,7 @@ class ClientAddBalanceView(APIView):
         client = Client.objects.get(id=client_id)
         added_balance = Decimal(request.data['balance'])
         if added_balance < 0:
-            raise ValidationError()
+            raise PermissionDenied("Balance must be positive")
 
         client.client_info.balance += added_balance
         client.client_info.save()
@@ -181,7 +181,7 @@ class SellerProductView(APIView):
         product = Product.objects.get(id=product_id)
 
         if product.owner != seller:
-            raise PermissionDenied()
+            raise PermissionDenied("You are not the owner of this product")
 
         product_serializer = ProductInSerializer(data=request.data)
         product_serializer.is_valid(raise_exception=True)
@@ -193,7 +193,7 @@ class SellerProductView(APIView):
         product = Product.objects.get(id=product_id)
 
         if product.owner != seller:
-            raise PermissionDenied()
+            raise PermissionDenied("You are not the owner of this product")
 
         product.delete()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
@@ -204,9 +204,9 @@ class ClientBuyProductView(APIView):
         client = Client.objects.get(id=client_id)
         product = Product.objects.get(id=product_id)
         if client.client_info.balance < product.price:
-            raise PurchaseError()
+            raise PurchaseError("Not enough money")
         if product.items_available < 1:
-            raise PurchaseError()
+            raise PurchaseError("Not enough items available")
         client.client_info.balance -= product.price
         client.client_info.save()
 
@@ -223,10 +223,10 @@ class ClientReviewProductView(APIView):
         product = Product.objects.get(id=product_id)
 
         if not Purchase.objects.filter(product_name=product.name, client=client).first():
-            raise PermissionDenied()
+            raise PermissionDenied("You have not bought this product")
 
         if ProductReview.objects.filter(product=product, client=client).first():
-            raise PermissionDenied()
+            raise PermissionDenied("You have already reviewed this product")
 
         product_review = ProductReviewInSerializer(data=request.data)
         product_review.is_valid(raise_exception=True)
@@ -239,14 +239,31 @@ class ClientReviewSellerView(APIView):
         seller = Seller.objects.get(id=seller_id)
 
         if not Purchase.objects.filter(seller=seller, client=client).first():
-            raise PermissionDenied()
+            raise PermissionDenied("You have not bought from this seller")
 
         if SellerReview.objects.filter(seller=seller, client=client).first():
-            raise PermissionDenied()
+            raise PermissionDenied("You have already reviewed this seller")
 
         seller_review = SellerReviewInSerializer(data=request.data)
         seller_review.is_valid(raise_exception=True)
         seller_review.create(seller_review.validated_data, seller, client)
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
+
+class UserChangePasswordView(APIView):
+    def post(self, request, user_id):
+        if request.data['type'] == 'client':
+            user = Client.objects.get(id=user_id)
+        elif request.data['type'] == 'seller':
+            user = Seller.objects.get(id=user_id)
+        else:
+            raise PermissionDenied("Invalid user type")
+
+        password = request.data['password']
+        validate_password(password)
+
+        user.password = password
+        user.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 

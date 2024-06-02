@@ -76,8 +76,10 @@ class RegistrationFrame(ctk.CTkFrame):
 
         if response.status_code == 200:
             self.master.after(0, self.handle_successful_registration, response.json(), user_type, email, password)
+        elif response.status_code == 400:
+            self.master.after(0, self.show_error_dialog, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error_dialog, 'Registration failed!')
+            self.master.after(0, self.show_error_dialog, 'Server error!')
 
     def get_registration_entries(self, user_type):
         if user_type == 'client':
