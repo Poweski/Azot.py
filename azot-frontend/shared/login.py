@@ -45,7 +45,7 @@ class LoginFrame(ctk.CTkFrame):
 
         ctk.CTkButton(tab, text='Register', command=self.master.create_registration_frame).grid(row=5, column=1, pady=10)
 
-        ctk.CTkButton(tab, text='Forget Password?', command=self.master.create_forgetpassword_frame).grid(row=6, column=1, pady=10)
+        ctk.CTkButton(tab, text='Forgot Password?', command=self.master.create_forgot_password_frame).grid(row=6, column=1, pady=10)
 
     def login_client(self):
         thread = threading.Thread(target=self.login, args=('client',))

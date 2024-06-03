@@ -98,6 +98,10 @@ class ClientCartView(APIView):
         client = Client.objects.get(id=client_id)
         orders = request.data['orders']
         cart = client.cart
+
+        for order in cart.order_set.all():
+            order.delete()
+
         for order in orders:
             product = Product.objects.get(id=order['product'])
             Order.objects.create(id=uuid.uuid4(), product=product, quantity=order['quantity'], cart = cart)
