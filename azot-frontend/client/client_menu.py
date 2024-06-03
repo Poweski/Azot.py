@@ -162,7 +162,7 @@ class MainMenuFrame(ctk.CTkFrame):
     def search(self):
         phrase = self.search_entry.get()
         data = {'request': phrase}
-        url = 'http://localhost:8080/api/product'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product'
         response = requests.post(url, json=data)
 
         if response.status_code == 200:

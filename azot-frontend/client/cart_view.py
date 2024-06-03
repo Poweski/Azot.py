@@ -3,9 +3,6 @@ import threading
 from functools import partial
 import customtkinter as ctk
 from shared import utils
-from urllib.request import urlopen
-from PIL import Image
-import io
 from app_settings import *
 
 # TODO in production
@@ -80,25 +77,7 @@ class CartView(ctk.CTkFrame):
     def load_product(self, product_frame, placeholder_label):
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
         response = requests.get(url)
-    def add_to_cart(self):
-        try:
-            quantity = utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show()
-            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
-            data = {
-                "orders": [
-                    {
-                        "product": self.product.id,
-                        "quantity": quantity
-                    }]
-            }
-            response = requests.post(url, json=data)
 
-            if response.status_code == 200:
-                utils.InfoDialog(self, title='Success', message='Product added to cart').show()
-            elif response.status_code == 400:
-                utils.ErrorDialog(self, message=response.json().get('error')).show()
-            else:
-                utils.ErrorDialog(self, message='Failed to add product to cart!').show()
         if response.status_code == 200:
             product_data = response.json().get('content')
             product_id = product_data['id']

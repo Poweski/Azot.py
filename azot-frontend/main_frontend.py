@@ -4,13 +4,11 @@ from seller import *
 import customtkinter as ctk
 
 
-
-# TODO client and seller menu
-# TODO error after registering a new user when entering the profile
-# TODO changing the number of items after purchase
 # TODO add cart
 # TODO add purchases in client
 # TODO add orders in seller
+# TODO changing the number of items after purchase (refresh button)
+# TODO settings bugs
 
 # TODO seller rating and reviews
 # TODO product rating and reviews
@@ -20,11 +18,8 @@ import customtkinter as ctk
 # TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
 # TODO bug: register a new user -> enter the profile -> crash
 
-# TODO changing the number of items after purchase (refresh button)
-# settings bugs
 
 class App(ctk.CTk):
-
     def __init__(self):
         super().__init__()
 
@@ -49,8 +44,7 @@ class App(ctk.CTk):
         self.settings_frame = None
         self.product_frame = None
         self.cart_frame = None
-
-        self.forgetpassword_frame = None
+        self.forgot_password_frame = None
 
         self.create_login_frame()
 
@@ -98,10 +92,10 @@ class App(ctk.CTk):
         self.product_frame = edit_product_view.EditProductView(self, _product)
         self.product_frame.pack(fill='both', expand=True)
 
-    def create_forgetpassword_frame(self):
+    def create_forgot_password_frame(self):
         self.clear_frame()
-        self.forgetpassword_frame = forget_password.ForgetpasswordFrame(self)
-        self.forgetpassword_frame.pack(fill='both', expand=True)
+        self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
+        self.forgot_password_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
         _product = None

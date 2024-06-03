@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from shared import utils
 import requests
+from app_settings import *
 
 
 class ProfileFrame(ctk.CTkFrame):
