@@ -44,6 +44,7 @@ class App(ctk.CTk):
         self.profile_frame = None
         self.settings_frame = None
         self.product_frame = None
+        self.cart_frame = None
 
         self.create_login_frame()
 
@@ -101,7 +102,9 @@ class App(ctk.CTk):
         self.product_frame.pack(fill='both', expand=True)
 
     def create_cart_frame(self):
-        pass
+        self.clear_frame()
+        self.cart_frame = cart_view.CartView(self)
+        self.cart_frame.pack(fill='both', expand=True)
 
     def create_orders_frame(self):
         pass
