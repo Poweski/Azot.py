@@ -1,7 +1,8 @@
 from .utils import *
 import requests
 
-class ForgetpasswordFrame(ctk.CTkFrame):
+
+class ForgotPasswordFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
@@ -17,10 +18,10 @@ class ForgetpasswordFrame(ctk.CTkFrame):
         self.client_tab = self.tabview.add('Client')
         self.seller_tab = self.tabview.add('Seller')
 
-        self.create_forgetpassword_tab(self.client_tab, 'client')
-        self.create_forgetpassword_tab(self.seller_tab, 'seller')
+        self.create_forgot_password_tab(self.client_tab, 'client')
+        self.create_forgot_password_tab(self.seller_tab, 'seller')
 
-    def create_forgetpassword_tab(self, tab, user_type):
+    def create_forgot_password_tab(self, tab, user_type):
         ctk.CTkLabel(tab, text='').grid(row=0, column=0, padx=10, pady=1)
         ctk.CTkLabel(tab, text='Email        ').grid(row=1, column=0, padx=10, pady=5)
         email_entry = ctk.CTkEntry(tab)
@@ -30,14 +31,14 @@ class ForgetpasswordFrame(ctk.CTkFrame):
 
         if user_type == 'client':
             self.client_email_entry = email_entry
-            ctk.CTkButton(tab, text='Submit', command=self.forgetpassword).grid(row=3, column=1, pady=10)
+            ctk.CTkButton(tab, text='Submit', command=self.forgot_password).grid(row=3, column=1, pady=10)
         else:
             self.seller_email_entry = email_entry
-            ctk.CTkButton(tab, text='Submit', command=self.forgetpassword).grid(row=3, column=1, pady=10)
+            ctk.CTkButton(tab, text='Submit', command=self.forgot_password).grid(row=3, column=1, pady=10)
 
         ctk.CTkButton(tab, text='Back to Login', command=self.master.create_login_frame).grid(row=4, column=1, pady=10)
 
-    def forgetpassword(self):
+    def forgot_password(self):
         user_type = self.master.user_type
         email = self.client_email_entry.get() if user_type == 'client' else self.seller_email_entry.get()
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/password/{user_type}'

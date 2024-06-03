@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from shared import utils
 import requests
+from app_settings import *
 
 
 class ProfileFrame(ctk.CTkFrame):
@@ -57,9 +58,10 @@ class ProfileFrame(ctk.CTkFrame):
         self.email_entry = self.create_labeled_entry(balance_frame, 'Email', state='disabled')
 
         ctk.CTkLabel(balance_frame, text='Your balance:', font=('Helvetica', 18)).pack(padx=10, pady=5)
-        self.balance_entry = ctk.CTkEntry(balance_frame, justify='right', state='disabled')
+        self.balance_entry = ctk.CTkEntry(balance_frame, justify='right')
         self.balance_entry.pack(padx=10, pady=5)
-        self.balance_entry.insert(0, '0')
+        self.balance_entry.insert(0, self.master.user.client_info.balance)
+        self.balance_entry.configure(state='disabled')
 
         self.balance_button = ctk.CTkButton(balance_frame, text='Top Up', command=self.top_up)
         self.balance_button.pack(pady=10)
