@@ -36,7 +36,7 @@ class ProductView(ctk.CTkFrame):
         label_frame.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
         name_label = ctk.CTkLabel(label_frame, text='Product Name', font=('Helvetica', 16, 'bold'))
         name_label.pack()
-        name_entry = ctk.CTkEntry(label_frame, justify='center', font=('Helvetica', 16, 'bold'))
+        name_entry = ctk.CTkEntry(label_frame, justify='center', font=('Helvetica', 16, 'bold'), width=230)
         name_entry.insert(0, self.product.name)
         name_entry.configure(state='disabled')
         name_entry.pack()
@@ -102,7 +102,10 @@ class ProductView(ctk.CTkFrame):
 
     def add_to_cart(self):
         try:
-            quantity = int(utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show())
+            value = utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show()
+            if not value:
+                raise ValueError
+            quantity = int(value)
             url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
             data = {
                 "orders": [
@@ -112,7 +115,7 @@ class ProductView(ctk.CTkFrame):
                     }
                 ]
             }
-            response = requests.post(url, json=data)
+            response = requests.put(url, json=data)
 
             if response.status_code == 200:
                 utils.InfoDialog(self, title='Success', message='Product added to cart').show()

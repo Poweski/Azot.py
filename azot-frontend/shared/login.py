@@ -45,7 +45,7 @@ class LoginFrame(ctk.CTkFrame):
 
         ctk.CTkButton(tab, text='Register', command=self.master.create_registration_frame).grid(row=5, column=1, pady=10)
 
-        ctk.CTkButton(tab, text='Forget Password?', command=self.master.create_forgetpassword_frame).grid(row=6, column=1, pady=10)
+        ctk.CTkButton(tab, text='Forgot Password?', command=self.master.create_forgot_password_frame).grid(row=6, column=1, pady=10)
 
     def login_client(self):
         thread = threading.Thread(target=self.login, args=('client',))
@@ -79,7 +79,8 @@ class LoginFrame(ctk.CTkFrame):
             self.master.user = self.create_client_user(user_data, email, password)
             self.master.create_client_main_frame()
 
-    def create_seller_user(self, user_data, email, password):
+    @staticmethod
+    def create_seller_user(user_data, email, password):
         seller_info_data = user_data.get('seller_info')
         seller_info = None
 
@@ -97,7 +98,8 @@ class LoginFrame(ctk.CTkFrame):
             products=[]
         )
 
-    def create_client_user(self, user_data, email, password):
+    @staticmethod
+    def create_client_user(user_data, email, password):
         client_info_data = user_data.get('client_info')
         client_info = None
         if client_info_data:
@@ -112,7 +114,8 @@ class LoginFrame(ctk.CTkFrame):
             client_id=user_data.get('id'),
             email=email,
             password=password,
-            client_info=client_info
+            client_info=client_info,
+            cart=[]
         )
 
     def show_error_dialog(self, message):

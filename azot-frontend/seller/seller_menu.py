@@ -80,7 +80,7 @@ class MainMenuFrame(ctk.CTkFrame):
         for _ in range(len(self.master.user.products)):
             product_frame = ctk.CTkFrame(self.offers_frame)
             placeholder_label = ctk.CTkLabel(product_frame, text='Loading...')
-            placeholder_label.grid(row=self.current_row, column=self.current_column, padx=5, pady=5, sticky='nsew')
+            placeholder_label.pack()
             product_frame.grid(row=self.current_row, column=self.current_column, padx=5, pady=5)
             self.current_column += 1
             if self.current_column > 3:
@@ -107,7 +107,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f'Price: ${product.price:.2f}').pack()
         ctk.CTkLabel(product_frame, text=f'Items available: {product.items_available}').pack()
         check_command = partial(self.check_product, product.id)
-        ctk.CTkButton(product_frame, text='Edit', command=check_command).pack()
+        ctk.CTkButton(product_frame, text='Edit', command=check_command).pack(padx=10, pady=5)
 
     def show_error(self):
         utils.ErrorDialog(self, message='Failed to download product').show()

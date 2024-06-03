@@ -58,6 +58,11 @@ class App(ctk.CTk):
         self.registration_frame = register.RegistrationFrame(self)
         self.registration_frame.pack(fill='both', expand=True)
 
+    def create_forgot_password_frame(self):
+        self.clear_frame()
+        self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
+        self.forgot_password_frame.pack(fill='both', expand=True)
+
     def create_seller_main_frame(self):
         self.clear_frame()
         self.main_frame = seller_menu.MainMenuFrame(self)
@@ -91,11 +96,6 @@ class App(ctk.CTk):
         self.clear_frame()
         self.product_frame = edit_product_view.EditProductView(self, _product)
         self.product_frame.pack(fill='both', expand=True)
-
-    def create_forgot_password_frame(self):
-        self.clear_frame()
-        self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
-        self.forgot_password_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
         _product = None

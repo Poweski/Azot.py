@@ -25,7 +25,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
         ctk.CTkLabel(left_frame, text='').pack()
         ctk.CTkLabel(left_frame, text='Your balance:', font=('Helvetica', 15)).pack(padx=20, pady=10)
-        ctk.CTkLabel(left_frame, text=f'{self.master.user.client_info.balance} $', font=('Helvetica', 15)).pack(padx=20, pady=10)
+        ctk.CTkLabel(left_frame, text=f'$ {self.master.user.client_info.balance}', font=('Helvetica', 15)).pack(padx=20, pady=10)
         ctk.CTkLabel(left_frame, text='').pack()
         ctk.CTkButton(left_frame, text='Profile', command=master.create_client_profile_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Cart', command=master.create_cart_frame).pack(padx=20, pady=10)
@@ -104,7 +104,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f'Price: ${product.price:.2f}').pack()
         ctk.CTkLabel(product_frame, text=f'Items available: {product.items_available}').pack()
         check_command = partial(self.check_product, product.id)
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10, pady=5)
 
     def shuffle_offers(self):
         self.master.viewed_products.clear()
@@ -151,7 +151,7 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f'Price: ${product_data['price']:.2f}').pack()
         ctk.CTkLabel(product_frame, text=f'Items available: {product_data['items_available']}').pack()
         check_command = partial(self.check_product, product_id)
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10, pady=5)
 
     def show_error(self, message):
         utils.ErrorDialog(self, message=message).show()

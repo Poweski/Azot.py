@@ -1,5 +1,4 @@
 import requests
-
 from .utils import *
 
 
@@ -131,7 +130,7 @@ class SettingsFrame(ctk.CTkFrame):
             self.show_error_dialog('Passwords do not match')
             return
 
-        id= self.master.user.id
+        id = self.master.user.id
         password = self.password_entry.get()
         type = self.master.user_type
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{id}/change_password'

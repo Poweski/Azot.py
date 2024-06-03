@@ -47,6 +47,7 @@ class ProfileFrame(ctk.CTkFrame):
         self.phone_entry = self.create_labeled_entry(info_frame, 'Phone')
         self.address_entry = self.create_labeled_entry(info_frame, 'Address')
 
+        ctk.CTkLabel(info_frame, text='').pack()
         self.edit_button = ctk.CTkButton(info_frame, text='Edit', command=self.toggle_edit_mode)
         self.edit_button.pack(padx=10, pady=5)
 
@@ -57,10 +58,11 @@ class ProfileFrame(ctk.CTkFrame):
         self.id_entry = self.create_labeled_entry(balance_frame, 'ID', state='disabled')
         self.email_entry = self.create_labeled_entry(balance_frame, 'Email', state='disabled')
 
+        ctk.CTkLabel(balance_frame, text='').pack()
         ctk.CTkLabel(balance_frame, text='Your balance:', font=('Helvetica', 18)).pack(padx=10, pady=5)
         self.balance_entry = ctk.CTkEntry(balance_frame, justify='right')
         self.balance_entry.pack(padx=10, pady=5)
-        self.balance_entry.insert(0, self.master.user.client_info.balance)
+        self.balance_entry.insert(0, f'$ {self.master.user.client_info.balance}')
         self.balance_entry.configure(state='disabled')
 
         self.balance_button = ctk.CTkButton(balance_frame, text='Top Up', command=self.top_up)
@@ -72,9 +74,11 @@ class ProfileFrame(ctk.CTkFrame):
 
         self.back_button = ctk.CTkButton(bottom_frame, text='Back', command=self.master.create_client_main_frame)
         self.back_button.pack(pady=1)
+        ctk.CTkLabel(bottom_frame, text='').pack()
 
     def create_labeled_entry(self, frame, label_text, state='normal'):
-        ctk.CTkLabel(frame, text=label_text).pack(padx=10)
+        ctk.CTkLabel(frame, text='').pack()
+        ctk.CTkLabel(frame, text=label_text).pack(padx=5)
         entry = ctk.CTkEntry(frame, width=260, state=state)
         entry.pack(padx=10, pady=1)
         return entry
@@ -144,6 +148,9 @@ class ProfileFrame(ctk.CTkFrame):
     def top_up(self):
         try:
             value = utils.InputDialog(self, title='Recharge', message='Enter the amount:').show()
+            if not value:
+                raise ValueError
+
             balance_amount = float(value)
             client_id = self.master.user.id
             data = {'balance': balance_amount}

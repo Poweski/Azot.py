@@ -10,7 +10,7 @@ class ForgotPasswordFrame(ctk.CTkFrame):
         window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
 
-        ctk.CTkLabel(self, text='Forget Password', font=('Helvetica', 20, 'bold')).pack(pady=10)
+        ctk.CTkLabel(self, text='Forgot Password', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
         self.tabview = ctk.CTkTabview(self)
         self.tabview.pack(padx=10, pady=10, fill='both', expand=True)
