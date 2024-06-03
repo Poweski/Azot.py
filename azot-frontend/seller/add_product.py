@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import requests
 from shared import utils, classes
-
+from app_settings import *
 
 class AddProductFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -101,7 +101,7 @@ class AddProductFrame(ctk.CTkFrame):
         }
 
     def send_product_data(self, data):
-        url = f'http://localhost:8080/api/seller/{self.master.user.id}/product'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product'
         response = requests.post(url, json=data)
 
         if response.status_code == 200:

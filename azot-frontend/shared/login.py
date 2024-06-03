@@ -59,7 +59,7 @@ class LoginFrame(ctk.CTkFrame):
         self.master.user_type = user_type
         email = self.client_email_entry.get() if user_type == 'client' else self.seller_email_entry.get()
         password = self.client_password_entry.get() if user_type == 'client' else self.seller_password_entry.get()
-        url = f'http://localhost:8080/api/{user_type}/login'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{user_type}/login'
         data = {'email': email, 'password': password}
         response = requests.post(url, json=data)
 

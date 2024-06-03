@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from shared import utils
 import requests
+from app_settings import *
 
 
 class ProfileFrame(ctk.CTkFrame):
@@ -91,7 +92,7 @@ class ProfileFrame(ctk.CTkFrame):
         _id = self.master.user.id
         data = {key: entry.get() for key, entry in self.entries.items() if key not in ['id', 'email']}
 
-        url = f'http://localhost:8080/api/seller/{_id}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{_id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:

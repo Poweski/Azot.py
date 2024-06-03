@@ -122,7 +122,7 @@ class ProfileFrame(ctk.CTkFrame):
             'phone': self.phone_entry.get()
         }
 
-        url = f'http://localhost:8080/api/client/{id}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:
@@ -145,7 +145,7 @@ class ProfileFrame(ctk.CTkFrame):
             balance_amount = float(value)
             client_id = self.master.user.id
             data = {'balance': balance_amount}
-            url = f'http://localhost:8080/api/client/{client_id}/balance'
+            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{client_id}/balance'
             response = requests.post(url, json=data)
 
             if response.status_code == 200:

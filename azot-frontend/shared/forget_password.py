@@ -40,7 +40,7 @@ class ForgetpasswordFrame(ctk.CTkFrame):
     def forgetpassword(self):
         user_type = self.master.user_type
         email = self.client_email_entry.get() if user_type == 'client' else self.seller_email_entry.get()
-        url = f'http://localhost:8080/api/password/{user_type}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/password/{user_type}'
         data = {'email': email}
         response = requests.post(url, json=data)
 

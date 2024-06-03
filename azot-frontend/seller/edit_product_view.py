@@ -4,6 +4,7 @@ from shared import utils
 from urllib.request import urlopen
 from PIL import Image
 import io
+from app_settings import *
 
 
 class EditProductView(ctk.CTkFrame):
@@ -91,7 +92,7 @@ class EditProductView(ctk.CTkFrame):
     def delete_product(self):
         dialog = utils.ConfirmDialog(self, title='Delete', message='Are you sure you want to delete this product?')
         if dialog.show():
-            url = f'http://localhost:8080/api/seller/{self.master.user.id}/product/{self.product.id}'
+            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product/{self.product.id}'
             response = requests.delete(url)
 
             if response.status_code == 200:
@@ -171,7 +172,7 @@ class EditProductView(ctk.CTkFrame):
             "items_available": items_available
         }
 
-        url = f'http://localhost:8080/api/seller/{self.master.user.id}/product/{product_id}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product/{product_id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:

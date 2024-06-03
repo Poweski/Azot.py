@@ -6,6 +6,7 @@ from PIL import Image
 import threading
 import requests
 import io
+from app_settings import *
 
 
 class MainMenuFrame(ctk.CTkFrame):
@@ -80,7 +81,7 @@ class MainMenuFrame(ctk.CTkFrame):
 
     def fetch_products(self):
         try:
-            response = requests.get(f'http://localhost:8080/api/seller/{self.master.user.id}/product')
+            response = requests.get(f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product')
             products_list = response.json().get('content')
 
             products = []

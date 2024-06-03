@@ -6,6 +6,7 @@ from functools import partial
 from urllib.request import urlopen
 from PIL import Image
 import io
+from app_settings import *
 
 
 class MainMenuFrame(ctk.CTkFrame):
@@ -87,7 +88,7 @@ class MainMenuFrame(ctk.CTkFrame):
         thread.start()
 
     def load_product(self, product_frame, placeholder_label):
-        url = 'http://localhost:8080/api/product/random'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/random'
         response = requests.get(url)
 
         if response.status_code == 200:

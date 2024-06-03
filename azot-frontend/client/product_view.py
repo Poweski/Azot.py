@@ -4,6 +4,7 @@ from shared import utils
 from urllib.request import urlopen
 from PIL import Image
 import io
+from app_settings import *
 
 
 class ProductView(ctk.CTkFrame):
@@ -84,7 +85,7 @@ class ProductView(ctk.CTkFrame):
     def add_to_cart(self):
         try:
             quantity = int(utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show())
-            url = f'http://localhost:8080/api/client/{self.master.user.id}/cart'
+            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
             data = {
                 "orders": [
                     {

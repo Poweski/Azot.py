@@ -134,7 +134,7 @@ class SettingsFrame(ctk.CTkFrame):
         id= self.master.user.id
         password = self.password_entry.get()
         type = self.master.user_type
-        url = f'http://localhost:8080/api/{id}/change_password'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{id}/change_password'
         data = {'password': password, 'type': type}
         response = requests.post(url, json=data)
 
