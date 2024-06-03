@@ -1,3 +1,5 @@
+import requests
+
 from .utils import *
 
 
@@ -125,5 +127,29 @@ class SettingsFrame(ctk.CTkFrame):
         self.master.theme = value
 
     def change_password(self):
-        # TODO change password
+        if self.password_entry.get() != self.confirm_password_entry.get():
+            self.show_error_dialog('Passwords do not match')
+            return
+
+        id= self.master.user.id
+        password = self.password_entry.get()
+        type = self.master.user_type
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{id}/change_password'
+        data = {'password': password, 'type': type}
+        response = requests.post(url, json=data)
+
+        if response.status_code == 200:
+            self.master.after(0, self.show_success_dialog)
+        elif response.status_code == 400:
+            self.master.after(0, self.show_error_dialog, response.json().get('error'))
+        else:
+            self.master.after(0, self.show_error_dialog, 'Password change failed')
         pass
+
+    def show_success_dialog(self):
+        success = InfoDialog(self, title='Success', message='Password changed successfully')
+        success.show()
+
+    def show_error_dialog(self, message):
+        error = ErrorDialog(self, message=message)
+        error.show()

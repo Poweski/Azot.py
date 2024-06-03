@@ -123,7 +123,7 @@ class ProfileFrame(ctk.CTkFrame):
             'phone': self.phone_entry.get()
         }
 
-        url = f'http://localhost:8080/api/client/{id}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:
@@ -133,6 +133,8 @@ class ProfileFrame(ctk.CTkFrame):
             client_info.phone = data['phone']
             client_info.address = data['address']
             utils.InfoDialog(self, title='Success', message='Profile updated successfully').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
             utils.ErrorDialog(self, message='Failed to update profile!').show()
 
@@ -144,15 +146,18 @@ class ProfileFrame(ctk.CTkFrame):
             balance_amount = float(value)
             client_id = self.master.user.id
             data = {'balance': balance_amount}
-            url = f'http://localhost:8080/api/client/{client_id}/balance'
+            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{client_id}/balance'
             response = requests.post(url, json=data)
 
             if response.status_code == 200:
                 self.master.user.client_info.balance += balance_amount
                 self.update_balance_entry()
                 utils.InfoDialog(self, title='Success', message='Balance topped up successfully').show()
+            elif response.status_code == 400:
+                utils.ErrorDialog(self, message=response.json().get('error')).show()
             else:
                 utils.ErrorDialog(self, message='Failed to top up balance!').show()
+
         except ValueError:
             utils.ErrorDialog(self, message='Please enter a valid balance amount!').show()
 

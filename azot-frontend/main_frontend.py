@@ -3,21 +3,25 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
+
+
+# TODO client and seller menu
+# TODO error after registering a new user when entering the profile
+# TODO changing the number of items after purchase
 # TODO add cart
 # TODO add purchases in client
 # TODO add orders in seller
+
 # TODO seller rating and reviews
 # TODO product rating and reviews
+# TODO merge release brunch
+# TODO merge develop-frontend brunch
 
 # TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
 # TODO bug: register a new user -> enter the profile -> crash
 
-# TODO write readme asap
-# TODO extend error handling
-# TODO registration and password change experimental features
-# TODO implement password change logic and settings bugs
 # TODO changing the number of items after purchase (refresh button)
-
+# settings bugs
 
 class App(ctk.CTk):
 
@@ -45,6 +49,8 @@ class App(ctk.CTk):
         self.settings_frame = None
         self.product_frame = None
         self.cart_frame = None
+
+        self.forgetpassword_frame = None
 
         self.create_login_frame()
 
@@ -91,6 +97,11 @@ class App(ctk.CTk):
         self.clear_frame()
         self.product_frame = edit_product_view.EditProductView(self, _product)
         self.product_frame.pack(fill='both', expand=True)
+
+    def create_forgetpassword_frame(self):
+        self.clear_frame()
+        self.forgetpassword_frame = forget_password.ForgetpasswordFrame(self)
+        self.forgetpassword_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
         _product = None

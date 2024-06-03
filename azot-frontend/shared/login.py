@@ -45,6 +45,8 @@ class LoginFrame(ctk.CTkFrame):
 
         ctk.CTkButton(tab, text='Register', command=self.master.create_registration_frame).grid(row=5, column=1, pady=10)
 
+        ctk.CTkButton(tab, text='Forget Password?', command=self.master.create_forgetpassword_frame).grid(row=6, column=1, pady=10)
+
     def login_client(self):
         thread = threading.Thread(target=self.login, args=('client',))
         thread.start()
@@ -57,14 +59,16 @@ class LoginFrame(ctk.CTkFrame):
         self.master.user_type = user_type
         email = self.client_email_entry.get() if user_type == 'client' else self.seller_email_entry.get()
         password = self.client_password_entry.get() if user_type == 'client' else self.seller_password_entry.get()
-        url = f'http://localhost:8080/api/{user_type}/login'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{user_type}/login'
         data = {'email': email, 'password': password}
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
             self.master.after(0, self.handle_successful_login, response.json(), user_type, email, password)
+        elif response.status_code == 400:
+            self.master.after(0, self.show_error_dialog, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error_dialog)
+            self.master.after(0, self.show_error_dialog, 'Server error')
 
     def handle_successful_login(self, response_data, user_type, email, password):
         user_data = response_data.get('content')
@@ -111,6 +115,6 @@ class LoginFrame(ctk.CTkFrame):
             client_info=client_info
         )
 
-    def show_error_dialog(self):
-        error = ErrorDialog(self, message='Invalid email or password!')
+    def show_error_dialog(self, message):
+        error = ErrorDialog(self, message=message)
         error.show()

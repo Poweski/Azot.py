@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from shared import utils
 import requests
+from app_settings import *
 
 
 class ProfileFrame(ctk.CTkFrame):
@@ -91,7 +92,7 @@ class ProfileFrame(ctk.CTkFrame):
         _id = self.master.user.id
         data = {key: entry.get() for key, entry in self.entries.items() if key not in ['id', 'email']}
 
-        url = f'http://localhost:8080/api/seller/{_id}'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{_id}'
         response = requests.put(url, json=data)
 
         if response.status_code == 200:
@@ -100,7 +101,9 @@ class ProfileFrame(ctk.CTkFrame):
             user.phone = data['phone']
             user.address = data['address']
             utils.InfoDialog(self, title='Success', message='Profile updated successfully').show()
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
-            utils.ErrorDialog(self, message='Failed to update profile!').show()
+            utils.ErrorDialog(self, message='Failed to update profile').show()
 
         self.load_profile()

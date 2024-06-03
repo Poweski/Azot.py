@@ -4,6 +4,7 @@ import requests
 import threading
 
 
+
 class RegistrationFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -70,14 +71,16 @@ class RegistrationFrame(ctk.CTkFrame):
             self.master.after(0, self.show_error_dialog, 'Passwords do not match!')
             return
 
-        url = f'http://localhost:8080/api/{user_type}/register'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{user_type}/register'
         data = {'email': email, 'password': password}
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
             self.master.after(0, self.handle_successful_registration, response.json(), user_type, email, password)
+        elif response.status_code == 400:
+            self.master.after(0, self.show_error_dialog, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error_dialog, 'Registration failed!')
+            self.master.after(0, self.show_error_dialog, 'Server error!')
 
     def get_registration_entries(self, user_type):
         if user_type == 'client':

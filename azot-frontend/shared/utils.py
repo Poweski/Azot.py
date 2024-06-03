@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from .classes import Product
+from app_settings import *
 
 
 def adjust_window(window_width, window_height, app):

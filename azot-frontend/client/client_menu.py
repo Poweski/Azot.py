@@ -6,6 +6,7 @@ from functools import partial
 from urllib.request import urlopen
 from PIL import Image
 import io
+from app_settings import *
 
 
 class MainMenuFrame(ctk.CTkFrame):
@@ -122,7 +123,7 @@ class MainMenuFrame(ctk.CTkFrame):
         thread.start()
 
     def load_product(self, product_frame, placeholder_label):
-        url = 'http://localhost:8080/api/product/random'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/random'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -131,8 +132,10 @@ class MainMenuFrame(ctk.CTkFrame):
             self.master.viewed_products.append(utils.create_product(product_data))
 
             self.master.after(0, self.update_product_view, product_frame, placeholder_label, product_data, product_id)
+        elif response.status_code == 400:
+            self.master.after(0, self.show_error, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error)
+            self.master.after(0, self.show_error, 'Failed to load product!')
 
     def update_product_view(self, product_frame, placeholder_label, product_data, product_id):
         placeholder_label.pack_forget()
@@ -150,8 +153,8 @@ class MainMenuFrame(ctk.CTkFrame):
         check_command = partial(self.check_product, product_id)
         ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
 
-    def show_error(self):
-        utils.ErrorDialog(self, message='Failed to download product').show()
+    def show_error(self, message):
+        utils.ErrorDialog(self, message=message).show()
 
     def check_product(self, product_id):
         self.master.create_product_frame(product_id)

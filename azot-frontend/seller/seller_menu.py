@@ -5,7 +5,10 @@ import requests
 from functools import partial
 from urllib.request import urlopen
 from PIL import Image
+import threading
+import requests
 import io
+from app_settings import *
 
 
 class MainMenuFrame(ctk.CTkFrame):
@@ -57,6 +60,32 @@ class MainMenuFrame(ctk.CTkFrame):
         main_frame.rowconfigure(1, weight=0)
         main_frame.rowconfigure(2, weight=1)
 
+    def fetch_products(self):
+        try:
+            response = requests.get(f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product')
+            products_list = response.json().get('content')
+
+            products = []
+            for product_data in products_list:
+                products.append(self.create_product(product_data))
+
+            self.master.user.products = products
+
+            self.master.after(0, self.display_products)
+        except requests.RequestException:
+            self.master.after(0, lambda: utils.ErrorDialog(self, message='Failed to download product').show())
+
+    def create_product(self, product_info):
+        return classes.Product(
+            product_info['id'],
+            product_info['name'],
+            product_info['price'],
+            product_info['description'],
+            product_info['image'],
+            product_info['items_available'],
+            product_info['tags'],
+            self.master.user
+        )
     def start(self):
         if self.master.user.products:
             self.display_offers()
