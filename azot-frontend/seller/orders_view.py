@@ -6,7 +6,7 @@ from app_settings import *
 from datetime import datetime
 
 
-class PurchasesView(ctk.CTkFrame):
+class OrdersView(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
@@ -33,13 +33,13 @@ class PurchasesView(ctk.CTkFrame):
         top_frame = ctk.CTkFrame(main_frame)
         top_frame.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
 
-        purchases_label = ctk.CTkLabel(top_frame, text='Your purchases', font=('Helvetica', 20, 'bold'))
+        purchases_label = ctk.CTkLabel(top_frame, text='Your sold products', font=('Helvetica', 20, 'bold'))
         purchases_label.pack(padx=5, pady=10)
 
         top_button_frame = ctk.CTkFrame(main_frame)
         top_button_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
 
-        back_button = ctk.CTkButton(top_button_frame, text='Back', command=self.master.create_client_main_frame)
+        back_button = ctk.CTkButton(top_button_frame, text='Back', command=self.master.create_seller_main_frame)
         back_button.pack(padx=5, pady=10)
 
     def display_offers(self):
@@ -58,7 +58,7 @@ class PurchasesView(ctk.CTkFrame):
         load_thread.start()
 
     def load_products(self, placeholder_label):
-        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/purchases'
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/purchases'
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -93,7 +93,7 @@ class PurchasesView(ctk.CTkFrame):
 
     def show_no_products(self, placeholder_label):
         placeholder_label.pack_forget()
-        ctk.CTkLabel(self.placeholder_frame, text='No products bought', font=('Helvetica', 20)).pack(padx=5, pady=10)
+        ctk.CTkLabel(self.placeholder_frame, text='No products sold', font=('Helvetica', 20)).pack(padx=5, pady=10)
 
     def update_product_view(self, product_frame, purchase):
         date_object = datetime.fromisoformat(purchase['date'].replace("Z", "+00:00"))

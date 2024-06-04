@@ -1,16 +1,13 @@
 from shared import *
 from client import *
 from seller import *
-from client import purchases_view
 import customtkinter as ctk
-
-# TODO add orders in seller
-# TODO settings bugs
 
 # TODO insert review buttons in purchase views
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
 
+# TODO settings bugs
 # TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
 
 
@@ -115,7 +112,9 @@ class App(ctk.CTk):
         self.cart_frame.pack(fill='both', expand=True)
 
     def create_orders_frame(self):
-        pass
+        self.clear_frame()
+        self.purchases_frame = orders_view.OrdersView(self)
+        self.purchases_frame.pack(fill='both', expand=True)
 
     def create_purchases_frame(self):
         self.clear_frame()
