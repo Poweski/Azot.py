@@ -19,7 +19,7 @@ from django.urls import path
 from apps.views import (ClientRegisterView, ClientLoginView, SellerRegisterView, SellerLoginView,
                         SellerAddProductView, GetProductsView, ClientCartView, ClientAddBalanceView, ClientChangeInfoView,
                         SellerChangeInfoView, ClientBuyProductView, SellerProductView, ClientReviewSellerView, ClientReviewProductView, GetRandomProductsView,
-                        SellerGetPurchasesView, ClientGetPurchasesView, UserChangePasswordView)
+                        SellerGetPurchasesView, ClientGetPurchasesView, UserChangePasswordView, GetProductByIdView)
 
 
 
@@ -43,4 +43,5 @@ urlpatterns = [
     path('api/seller/<str:seller_id>/purchases', SellerGetPurchasesView.as_view()),
     path('api/client/<str:client_id>/purchases', ClientGetPurchasesView.as_view()),
     path('api/<str:user_id>/change_password', UserChangePasswordView.as_view()),
+    path('api/product/id/<str:product_id>', GetProductByIdView.as_view()),
 ]
