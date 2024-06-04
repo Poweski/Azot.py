@@ -88,6 +88,10 @@ class GetRandomProductsView(APIView):
         product = Product.objects.order_by('?')[0]
         return Response({'content': ProductOutSerializer(product).data}, status=status.HTTP_200_OK)
 
+class GetProductByIdView(APIView):
+    def get(self, request, product_id):
+        product = Product.objects.get(id=product_id)
+        return Response({'content': ProductOutSerializer(product).data}, status=status.HTTP_200_OK)
 
 class ClientCartView(APIView):
     def get(self, request, client_id):
@@ -123,7 +127,7 @@ class ClientCartView(APIView):
             order.product.items_available -= order.quantity
             order.product.save()
 
-            Purchase.objects.create(id=uuid.uuid4(), seller=order.product.owner, product_name=order.product.name, quantity=order.quantity, cost=order.product.price * order.quantity, client=client)
+            Purchase.objects.create(id=uuid.uuid4(), seller=order.product.owner, product_name=order.product.name, quantity=order.quantity, cost=order.product.price * order.quantity, client=client, product_id=order.product.id)
 
             order.delete()
 
@@ -217,7 +221,7 @@ class ClientBuyProductView(APIView):
         product.items_available -= 1
         product.save()
 
-        Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product_name=product.name, quantity=1, cost=product.price, client=client)
+        Purchase.objects.create(id=uuid.uuid4(), seller=product.owner, product_name=product.name, quantity=1, cost=product.price, client=client, product_id=product.id)
 
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 

@@ -105,6 +105,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
     quantity = serializers.IntegerField()
     date = serializers.DateTimeField()
     cost = serializers.DecimalField(max_digits=10, decimal_places=2)
+    product_id = serializers.UUIDField()
 
 
     def to_representation(self, instance):
@@ -113,6 +114,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
             'quantity': instance.quantity,
             'date': instance.date,
             'cost': instance.cost,
+            'product_id': instance.product_id,
         }
 
     def to_internal_value(self, data):

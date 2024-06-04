@@ -62,6 +62,7 @@ class Product(models.Model):
 
 class Purchase(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
+    product_id = models.UUIDField()
     product_name = models.CharField(max_length=100)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
