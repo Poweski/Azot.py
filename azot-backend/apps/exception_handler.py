@@ -7,7 +7,6 @@ from rest_framework.views import exception_handler
 def custom_exception_handler(exc, context):
     try:
         exception_class = exc.__class__.__name__
-
         handlers = {
             'IntegrityError': _handler_integrity_error,
             'ValidationError': _handler_validation_error,
@@ -18,6 +17,7 @@ def custom_exception_handler(exc, context):
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
+
         if exception_class in handlers:
             # calling hanlder based on the custom
             message, status_code = handlers[exception_class](exc, context, res)
@@ -28,6 +28,7 @@ def custom_exception_handler(exc, context):
 
         return Response(data={'error': message}, status=status_code)
     except Exception as e:
+        print(e)
         return Response(data={'error': 'Internal server error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -45,7 +46,10 @@ def _handler_integrity_error(exc, context, res):
 
 
 def _handler_not_found(exc, context, res):
-    return exc, 400
+    if 'Login' in context['view'].__class__.__name__:
+        return "Wrong email or password", 400
+    else:
+        return str(exc), 404
 
 
 
