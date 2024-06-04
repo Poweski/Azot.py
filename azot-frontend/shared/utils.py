@@ -22,7 +22,9 @@ def create_product(product_info):
         product_info['image'],
         product_info['items_available'],
         product_info['tags'],
-        product_info['owner']
+        product_info['owner'],
+        product_info['average_rating'],
+        product_info['reviews']
     )
 
 

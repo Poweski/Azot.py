@@ -37,7 +37,7 @@ urlpatterns = [
     path('api/seller/<str:seller_id>', SellerChangeInfoView.as_view()),
     path('api/client/<str:client_id>/product/<str:product_id>', ClientBuyProductView.as_view()),
     path('api/seller/<str:seller_id>/product/<str:product_id>', SellerProductView.as_view()),
-    path('api/client/<str:client_id>/review/seller/<str:seller_id>', ClientReviewSellerView.as_view()),
+    path('api/client/<str:client_id>/review/seller/<str:product_id>', ClientReviewSellerView.as_view()),
     path('api/client/<str:client_id>/review/product/<str:product_id>', ClientReviewProductView.as_view()),
     path('api/product/random', GetRandomProductsView.as_view()),
     path('api/seller/<str:seller_id>/purchases', SellerGetPurchasesView.as_view()),

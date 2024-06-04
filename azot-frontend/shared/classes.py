@@ -57,7 +57,7 @@ class SellerInfo:
 
 
 class Product:
-    def __init__(self, product_id, name, price, description, image, items_available, tags, owner):
+    def __init__(self, product_id, name, price, description, image, items_available, tags, owner, avg_rating, reviews):
         self.id = product_id
         self.name = name
         self.price = price
@@ -66,6 +66,8 @@ class Product:
         self.items_available = items_available
         self.tags = tags
         self.owner = owner
+        self.reviews = reviews
+        self.avg_rating = avg_rating
 
     def __str__(self):
         return (f'Product(id={self.id}, name={self.name}, '

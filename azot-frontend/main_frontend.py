@@ -10,13 +10,11 @@ import customtkinter as ctk
 # TODO changing the number of items after purchase (refresh button)
 # TODO settings bugs
 
-# TODO seller rating and reviews
-# TODO product rating and reviews
+# TODO insert review buttons in purchase views
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
 
 # TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
-# TODO bug: register a new user -> enter the profile -> crash
 
 
 class App(ctk.CTk):
@@ -45,6 +43,8 @@ class App(ctk.CTk):
         self.product_frame = None
         self.cart_frame = None
         self.forgot_password_frame = None
+        self.review_frame = None
+        self.review_read_frame = None
 
         self.create_login_frame()
 
@@ -121,6 +121,18 @@ class App(ctk.CTk):
         self.clear_frame()
         self.settings_frame = settings.SettingsFrame(self)
         self.settings_frame.pack(fill='both', expand=True)
+
+    def create_review_frame(self, product, review_type):
+        self.clear_frame()
+        self.review_frame = review.ReviewFrame(self, product, review_type)
+        self.review_frame.pack(fill='both', expand=True)
+
+    def create_review_read_frame(self, product, review_type):
+        self.clear_frame()
+        self.review_read_frame = read_review.ReviewReadFrame(self, product, review_type)
+        self.review_read_frame.pack(fill='both', expand=True)
+
+
 
     def clear_frame(self):
         for widget in self.winfo_children():

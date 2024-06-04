@@ -238,9 +238,9 @@ class ClientReviewProductView(APIView):
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 class ClientReviewSellerView(APIView):
-    def post(self, request, client_id, seller_id):
+    def post(self, request, client_id, product_id):
         client = Client.objects.get(id=client_id)
-        seller = Seller.objects.get(id=seller_id)
+        seller = Product.objects.get(id=product_id).owner
 
         if not Purchase.objects.filter(seller=seller, client=client).first():
             raise PermissionDenied("You have not bought from this seller")
