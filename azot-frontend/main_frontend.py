@@ -7,8 +7,7 @@ import customtkinter as ctk
 # TODO add orders in seller
 # TODO settings bugs
 
-# TODO seller rating and reviews
-# TODO product rating and reviews
+# TODO insert review buttons in purchase views
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
 
@@ -42,6 +41,8 @@ class App(ctk.CTk):
         self.cart_frame = None
         self.forgot_password_frame = None
         self.purchases_frame = None
+        self.review_frame = None
+        self.review_read_frame = None
 
         self.create_login_frame()
 
@@ -125,6 +126,18 @@ class App(ctk.CTk):
         self.clear_frame()
         self.settings_frame = settings.SettingsFrame(self)
         self.settings_frame.pack(fill='both', expand=True)
+
+    def create_review_frame(self, product, review_type):
+        self.clear_frame()
+        self.review_frame = review.ReviewFrame(self, product, review_type)
+        self.review_frame.pack(fill='both', expand=True)
+
+    def create_review_read_frame(self, product, review_type):
+        self.clear_frame()
+        self.review_read_frame = read_review.ReviewReadFrame(self, product, review_type)
+        self.review_read_frame.pack(fill='both', expand=True)
+
+
 
     def clear_frame(self):
         for widget in self.winfo_children():

@@ -54,17 +54,29 @@ class ProductView(ctk.CTkFrame):
 
         self.create_label(left_frame, 'Seller')
         seller_entry = ctk.CTkEntry(left_frame, justify='center')
-        seller_entry.insert(0, self.product.owner['seller_info']['organization'])
+
+        if self.product.owner['seller_info']['organization']:
+            seller_entry.insert(0, self.product.owner['seller_info']['organization'])
+        else:
+            seller_entry.insert(0, 'Individual Seller')
+
         seller_entry.configure(state='disabled')
         seller_entry.pack()
 
-        self.create_label(left_frame, 'Seller Rating')
-        owner_avg_rating = self.product.owner.get('average_rating')
-        rating = f'{owner_avg_rating:.1f}' if owner_avg_rating else 'No Ratings'
+        self.create_label(left_frame, 'Product Rating')
+
+        rating = f'{self.product.avg_rating:.1f}' if self.product.avg_rating else 'No Ratings'
         rating_entry = ctk.CTkEntry(left_frame, justify='center')
         rating_entry.insert(0, rating)
         rating_entry.configure(state='disabled')
         rating_entry.pack()
+
+        self.create_label(left_frame, 'Seller Rating')
+        seller_rating_entry = ctk.CTkEntry(left_frame, justify='center')
+        owner_avg_rating = self.product.owner.get('average_rating')
+        seller_rating_entry.insert(0, f'{owner_avg_rating:.1f}' if owner_avg_rating else 'No Ratings')
+        seller_rating_entry.configure(state='disabled')
+        seller_rating_entry.pack()
 
         self.create_label(left_frame, 'Items Available')
         items_available_entry = ctk.CTkEntry(left_frame, justify='center')
@@ -72,9 +84,16 @@ class ProductView(ctk.CTkFrame):
         items_available_entry.configure(state='disabled')
         items_available_entry.pack()
 
-        ctk.CTkLabel(left_frame, text='').pack()
-        ctk.CTkButton(left_frame, text='Add to cart', command=self.add_to_cart, fg_color='red', hover_color='#8B0000').pack(pady=10)
-        ctk.CTkButton(left_frame, text='Back', command=self.master.create_client_main_frame).pack(pady=10)
+        #ctk.CTkLabel(left_frame, text='').pack()
+
+        ctk.CTkButton(left_frame, text='Add to cart', command=self.add_to_cart, fg_color='red', hover_color='#8B0000').pack(pady=20)
+
+        #ctk.CTkButton(left_frame, text='Product reviews', command=lambda: self.master.create_review_read_frame(self.product,'product')).pack(pady=5)
+        #ctk.CTkButton(left_frame, text='Seller reviews', command=lambda: self.master.create_review_read_frame(self.product,'seller')).pack(pady=5)
+
+        ctk.CTkButton(left_frame, text='Back', command=self.master.create_client_main_frame).pack()
+        #ctk.CTkButton(left_frame, text='Write Product Review', command=lambda: self.master.create_review_frame(self.product.id,'product')).pack(pady=10)
+        #ctk.CTkButton(left_frame, text='Write Seller Review', command=lambda: self.master.create_review_frame(self.product.id,'seller')).pack(pady=10)
 
     def create_label(self, frame, text):
         label = ctk.CTkLabel(frame, text=text, font=('Helvetica', 16))
@@ -87,10 +106,13 @@ class ProductView(ctk.CTkFrame):
         image_label = self.create_image_label(right_frame)
         image_label.pack(pady=10)
 
-        description_textbox = ctk.CTkTextbox(right_frame, wrap='word', font=('Helvetica', 16), width=450, height=230)
+        description_textbox = ctk.CTkTextbox(right_frame, wrap='word', font=('Helvetica', 16), width=450, height=140)
         description_textbox.insert('1.0', self.product.description)
         description_textbox.configure(state='disabled')
         description_textbox.pack(padx=5, pady=10)
+
+        ctk.CTkButton(right_frame, text='Product reviews', command=lambda: self.master.create_review_read_frame(self.product,'product')).pack(pady=8)
+        ctk.CTkButton(right_frame, text='Seller reviews', command=lambda: self.master.create_review_read_frame(self.product,'seller')).pack(pady=8)
 
     def create_image_label(self, frame):
         image_url = self.product.image

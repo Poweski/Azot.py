@@ -38,7 +38,7 @@ class ClientLoginView(APIView):
         if instance.password == client.validated_data['password']:
             return Response({'content': ClientOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
-            raise PermissionDenied("Wrong password")
+            raise PermissionDenied("Wrong email or password")
 
 class SellerRegisterView(APIView):
     def post(self, request):
@@ -56,7 +56,7 @@ class SellerLoginView(APIView):
         if instance.password == seller.validated_data['password']:
             return Response({'content': SellerOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
-            raise PermissionDenied("Wrong password")
+            raise PermissionDenied("Wrong email or password")
 
 
 class SellerAddProductView(APIView):
@@ -238,9 +238,9 @@ class ClientReviewProductView(APIView):
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 class ClientReviewSellerView(APIView):
-    def post(self, request, client_id, seller_id):
+    def post(self, request, client_id, product_id):
         client = Client.objects.get(id=client_id)
-        seller = Seller.objects.get(id=seller_id)
+        seller = Product.objects.get(id=product_id).owner
 
         if not Purchase.objects.filter(seller=seller, client=client).first():
             raise PermissionDenied("You have not bought from this seller")
