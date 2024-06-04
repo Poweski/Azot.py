@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from .classes import Product
-from app_settings import *
 
 
 def adjust_window(window_width, window_height, app):
@@ -143,38 +142,3 @@ class InputDialog(ctk.CTkToplevel):
         self.grab_set()
         self.wait_window()
         return self.value
-
-
-class EditDialog(ctk.CTkToplevel):
-    def __init__(self, master, title='Title', message='Edit product in cart'):
-        super().__init__(master)
-        self.title(title)
-        window_size = adjust_window(450, 120, master)
-        self.geometry(window_size)
-
-        self.label = ctk.CTkLabel(self, text=message, font=('Helvetica', 15), wraplength=250)
-        self.label.grid(row=0, column=0, columnspan=3, padx=5, pady=10)
-
-        self.submit_button = ctk.CTkButton(self, text='Delete from cart', command=self.delete_from_cart, fg_color='red', hover_color='#8B0000')
-        self.submit_button.grid(row=1, column=0, padx=5, pady=10)
-
-        self.submit_button = ctk.CTkButton(self, text='Change amount', command=self.change_amount)
-        self.submit_button.grid(row=1, column=1, padx=5, pady=10)
-
-        self.submit_button = ctk.CTkButton(self, text='OK', command=self.submit)
-        self.submit_button.grid(row=1, column=2, padx=5, pady=10)
-
-        self.value = None
-
-    def delete_from_cart(self):
-        pass
-
-    def change_amount(self):
-        pass
-
-    def submit(self):
-        self.destroy()
-
-    def show(self):
-        self.grab_set()
-        self.wait_window()

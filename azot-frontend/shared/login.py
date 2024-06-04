@@ -1,5 +1,6 @@
 from .classes import *
 from .utils import *
+from app_settings import *
 import requests
 import threading
 
@@ -115,7 +116,8 @@ class LoginFrame(ctk.CTkFrame):
             email=email,
             password=password,
             client_info=client_info,
-            cart=[]
+            cart=[],
+            purchases=[]
         )
 
     def show_error_dialog(self, message):

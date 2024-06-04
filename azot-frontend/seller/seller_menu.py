@@ -17,28 +17,42 @@ class MainMenuFrame(ctk.CTkFrame):
         window_size = utils.adjust_window(800, 600, master)
         master.geometry(window_size)
 
-        main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
-        main_frame.pack(fill='both', expand=True)
+        self.main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
+        self.main_frame.pack(fill='both', expand=True)
 
-        left_frame = ctk.CTkFrame(main_frame, corner_radius=0)
+        left_frame = ctk.CTkFrame(self.main_frame, corner_radius=0)
         left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nswe')
         ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Profile', command=master.create_seller_profile_frame).pack(padx=20, pady=10)
+        ctk.CTkButton(left_frame, text='Add Product', command=master.create_add_product_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Orders', command=master.create_orders_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Settings', command=master.create_settings_frame).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Log Out', command=self.log_out).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Close App', command=self.quit).pack(padx=20, pady=10)
 
-        top_frame = ctk.CTkFrame(main_frame)
+        top_frame = ctk.CTkFrame(self.main_frame)
         top_frame.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
         ctk.CTkLabel(top_frame, text='Welcome to Azot!', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
-        your_products_frame = ctk.CTkFrame(main_frame)
-        your_products_frame.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
-        ctk.CTkLabel(your_products_frame, text='Your products:', font=('Helvetica', 16)).pack(pady=10)
+        self.setup_offers_frame()
 
-        self.offers_frame = ctk.CTkScrollableFrame(main_frame, fg_color='#313335')
+        thread = threading.Thread(target=self.start)
+        thread.start()
+
+        self.main_frame.columnconfigure(0, weight=0)
+        self.main_frame.columnconfigure(1, weight=1)
+        self.main_frame.rowconfigure(0, weight=0)
+        self.main_frame.rowconfigure(1, weight=0)
+        self.main_frame.rowconfigure(2, weight=1)
+
+
+    def setup_offers_frame(self):
+        self.offers_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color='#313335')
         self.offers_frame.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
+        self.popular_offers_label = ctk.CTkLabel(self.offers_frame, text='Your products:', font=('Helvetica', 18))
+        self.popular_offers_label.grid(row=0, column=0, columnspan=2, padx=5, pady=10)
+        self.shuffle_button = ctk.CTkButton(self.offers_frame, text='Refresh', command=self.refresh)
+        self.shuffle_button.grid(row=0, column=2, columnspan=2)
 
         self.offers_frame.columnconfigure(0, weight=1)
         self.offers_frame.columnconfigure(1, weight=1)
@@ -48,14 +62,21 @@ class MainMenuFrame(ctk.CTkFrame):
         self.offers_frame.rowconfigure(1, weight=1)
         self.offers_frame.rowconfigure(2, weight=1)
 
-        thread = threading.Thread(target=self.start)
-        thread.start()
+    def refresh(self):
+        self.setup_offers_frame()
+        self.master.user.products.clear()
 
-        main_frame.columnconfigure(0, weight=0)
-        main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(0, weight=0)
-        main_frame.rowconfigure(1, weight=0)
-        main_frame.rowconfigure(2, weight=1)
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product'
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            products_list = response.json().get('content')
+            for product_data in products_list:
+                self.master.user.products.append(utils.create_product(product_data))
+            self.display_offers()
+
+        else:
+            self.master.after(0, self.show_error)
 
     def start(self):
         if self.master.user.products:
@@ -81,7 +102,7 @@ class MainMenuFrame(ctk.CTkFrame):
             product_frame = ctk.CTkFrame(self.offers_frame)
             placeholder_label = ctk.CTkLabel(product_frame, text='Loading...')
             placeholder_label.pack()
-            product_frame.grid(row=self.current_row, column=self.current_column, padx=5, pady=5)
+            product_frame.grid(row=self.current_row, column=self.current_column, padx=5, pady=5, sticky='nsew')
             self.current_column += 1
             if self.current_column > 3:
                 self.current_row += 1
@@ -95,7 +116,7 @@ class MainMenuFrame(ctk.CTkFrame):
             thread.start()
 
     def update_product_view(self, product_frame, placeholder_label, product):
-        placeholder_label.grid_forget()
+        placeholder_label.pack_forget()
         ctk.CTkLabel(product_frame, text=f'{product.name}').pack()
         image_url = product.image
         image_data = urlopen(image_url).read()

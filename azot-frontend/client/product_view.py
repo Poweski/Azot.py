@@ -1,5 +1,6 @@
 import requests
 import customtkinter as ctk
+import threading
 from shared import utils
 from urllib.request import urlopen
 from PIL import Image
@@ -100,21 +101,50 @@ class ProductView(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         return ctk.CTkLabel(frame, image=image_ctk, text='')
 
+    def load_products(self):
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            products_data = response.json().get('content', {}).get('orders', [])
+            if products_data:
+                self.master.user.cart.clear()
+                for product_data in products_data:
+                    quantity = product_data['quantity']
+                    product = utils.create_product(product_data['product'])
+                    product_tuple = (quantity, product)
+                    self.master.user.cart.append(product_tuple)
+        else:
+            self.master.after(0, self.show_error, response)
+
     def add_to_cart(self):
         try:
+            load_thread = threading.Thread(target=self.load_products)
+            load_thread.start()
+
             value = utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show()
             if not value:
                 raise ValueError
+
+            load_thread.join()
+
+            orders = []
+            for product_tuple in self.master.user.cart:
+                quantity, product = product_tuple
+                orders.append({
+                    'product': product.id,
+                    'quantity': quantity
+                })
+
             quantity = int(value)
+            orders.append({
+                'product': self.product.id,
+                'quantity': quantity
+            })
+
+            data = {'orders': orders}
+
             url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/cart'
-            data = {
-                "orders": [
-                    {
-                        "product": self.product.id,
-                        "quantity": quantity
-                    }
-                ]
-            }
             response = requests.put(url, json=data)
 
             if response.status_code == 200:
@@ -127,3 +157,6 @@ class ProductView(ctk.CTkFrame):
             utils.ErrorDialog(self, message='Please enter a valid quantity!').show()
         except Exception as err:
             utils.ErrorDialog(self, message=f'Error occurred: {err}').show()
+
+    def show_error(self, response):
+        utils.ErrorDialog(self, message=response.json().get('error')).show()

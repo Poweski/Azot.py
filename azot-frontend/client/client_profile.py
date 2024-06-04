@@ -172,5 +172,5 @@ class ProfileFrame(ctk.CTkFrame):
     def update_balance_entry(self):
         self.balance_entry.configure(state='normal')
         self.balance_entry.delete(0, 'end')
-        self.balance_entry.insert(0, f'{self.master.user.client_info.balance}')
+        self.balance_entry.insert(0, f'$ {self.master.user.client_info.balance}')
         self.balance_entry.configure(state='disabled')
