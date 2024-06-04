@@ -1,7 +1,6 @@
 import requests
 import customtkinter as ctk
 from shared import utils, ErrorDialog, InfoDialog
-
 from app_settings import *
 
 

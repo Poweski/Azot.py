@@ -1,8 +1,6 @@
-import requests
 import customtkinter as ctk
-from shared import utils, ErrorDialog, InfoDialog
+from shared import utils
 
-from app_settings import *
 
 class ReviewReadFrame(ctk.CTkFrame):
     def __init__(self, master, product, review_type):
@@ -47,8 +45,6 @@ class ReviewReadFrame(ctk.CTkFrame):
         reviews_frame = ctk.CTkScrollableFrame(self.main_frame)
         reviews_frame.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
 
-
-
         if self.review_type == 'product':
             if not self.product.reviews:
                 ctk.CTkLabel(reviews_frame, text='No reviews yet', font=('Helvetica', 14)).pack(pady=10)
@@ -91,4 +87,3 @@ class ReviewReadFrame(ctk.CTkFrame):
         return_button = ctk.CTkButton(bottom_frame, text='Return to Product',
                                       command=lambda: self.master.create_product_frame(self.product.id))
         return_button.pack(pady=10)
-

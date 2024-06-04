@@ -137,8 +137,6 @@ class App(ctk.CTk):
         self.review_read_frame = read_review.ReviewReadFrame(self, product, review_type)
         self.review_read_frame.pack(fill='both', expand=True)
 
-
-
     def clear_frame(self):
         for widget in self.winfo_children():
             widget.destroy()
