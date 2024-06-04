@@ -54,7 +54,7 @@ class ProfileFrame(ctk.CTkFrame):
         balance_frame = ctk.CTkFrame(self.main_frame)
         balance_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
 
-        self.id_entry = self.create_labeled_entry(balance_frame, 'ID', state='disabled')
+        #self.id_entry = self.create_labeled_entry(balance_frame, 'ID', state='disabled')
         self.email_entry = self.create_labeled_entry(balance_frame, 'Email', state='disabled')
 
         ctk.CTkLabel(balance_frame, text='Your balance:', font=('Helvetica', 18)).pack(padx=10, pady=5)
@@ -94,21 +94,25 @@ class ProfileFrame(ctk.CTkFrame):
 
     def enable_buttons(self, state):
         state = 'normal' if state else 'disabled'
-        for entry in [self.name_entry, self.surname_entry, self.phone_entry, self.address_entry, self.id_entry, self.email_entry]:
+        for entry in [self.name_entry, self.surname_entry, self.phone_entry, self.address_entry, self.email_entry]:
             entry.configure(state=state)
 
     def load_profile(self):
         try:
             self.enable_buttons(True)
-            self.id_entry.insert(0, self.master.user.id)
+            #self.id_entry.insert(0, self.master.user.id)
             self.email_entry.insert(0, self.master.user.email)
 
             client_info = self.master.user.client_info
             if client_info:
-                self.name_entry.insert(0, client_info.name)
-                self.surname_entry.insert(0, client_info.surname)
-                self.phone_entry.insert(0, client_info.phone)
-                self.address_entry.insert(0, client_info.address)
+                if client_info.name:
+                    self.name_entry.insert(0, client_info.name)
+                if client_info.surname:
+                    self.surname_entry.insert(0, client_info.surname)
+                if client_info.phone:
+                    self.phone_entry.insert(0, client_info.phone)
+                if client_info.address:
+                    self.address_entry.insert(0, client_info.address)
                 self.balance_entry.insert(0, client_info.balance)
         except requests.exceptions.RequestException as e:
             utils.ErrorDialog(self, message=f'Failed to load profile: {e}!').show()

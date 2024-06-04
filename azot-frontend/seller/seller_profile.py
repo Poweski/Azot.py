@@ -35,7 +35,7 @@ class ProfileFrame(ctk.CTkFrame):
 
     def create_profile_form(self):
         self.entries = {}
-        labels = ["Organization", "Phone", "Address", "ID", "Email"]
+        labels = ["Organization", "Phone", "Address", "Email"]
         for label in labels:
             ctk.CTkLabel(self.top_frame, text=label).pack(pady=5)
             entry = ctk.CTkEntry(self.top_frame, width=260)
@@ -70,7 +70,6 @@ class ProfileFrame(ctk.CTkFrame):
     def load_profile(self):
         try:
             user = self.master.user
-            self.entries['id'].insert(0, user.id)
             self.entries['email'].insert(0, user.email)
             seller_info = user.seller_info
 
@@ -85,7 +84,6 @@ class ProfileFrame(ctk.CTkFrame):
         except requests.RequestException as e:
             utils.ErrorDialog(self, message=f'Failed to load profile: {e}!').show()
         finally:
-            self.entries['id'].configure(state='disabled')
             self.entries['email'].configure(state='disabled')
 
     def save_profile(self):
