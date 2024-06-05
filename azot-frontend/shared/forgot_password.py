@@ -1,4 +1,5 @@
 from .utils import *
+from app_settings import *
 import requests
 
 

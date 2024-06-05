@@ -14,6 +14,7 @@ class ProfileFrame(ctk.CTkFrame):
         self.create_main_frame()
         self.create_top_frame()
         self.create_info_frame()
+        self.create_email_frame()
         self.create_balance_frame()
         self.create_bottom_frame()
 
@@ -31,6 +32,7 @@ class ProfileFrame(ctk.CTkFrame):
         self.main_frame.columnconfigure(1, weight=1)
         self.main_frame.rowconfigure(0, weight=0)
         self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.rowconfigure(2, weight=1)
 
     def create_top_frame(self):
         top_frame = ctk.CTkFrame(self.main_frame)
@@ -40,23 +42,24 @@ class ProfileFrame(ctk.CTkFrame):
 
     def create_info_frame(self):
         info_frame = ctk.CTkFrame(self.main_frame)
-        info_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
-
+        info_frame.grid(row=1, column=0, rowspan=2, padx=10, pady=10, sticky='nsew')
         self.name_entry = self.create_labeled_entry(info_frame, 'Name')
         self.surname_entry = self.create_labeled_entry(info_frame, 'Surname')
         self.phone_entry = self.create_labeled_entry(info_frame, 'Phone')
         self.address_entry = self.create_labeled_entry(info_frame, 'Address')
 
-        ctk.CTkLabel(info_frame, text='').pack()
         self.edit_button = ctk.CTkButton(info_frame, text='Edit', command=self.toggle_edit_mode)
         self.edit_button.pack(padx=10, pady=5)
 
+    def create_email_frame(self):
+        email_frame = ctk.CTkFrame(self.main_frame)
+        email_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
+        self.email_entry = self.create_labeled_entry(email_frame, 'Email', state='disabled')
+        ctk.CTkLabel(email_frame, text='').pack()
+
     def create_balance_frame(self):
         balance_frame = ctk.CTkFrame(self.main_frame)
-        balance_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
-
-        #self.id_entry = self.create_labeled_entry(balance_frame, 'ID', state='disabled')
-        self.email_entry = self.create_labeled_entry(balance_frame, 'Email', state='disabled')
+        balance_frame.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
 
         ctk.CTkLabel(balance_frame, text='').pack()
         ctk.CTkLabel(balance_frame, text='Your balance:', font=('Helvetica', 18)).pack(padx=10, pady=5)
@@ -70,17 +73,18 @@ class ProfileFrame(ctk.CTkFrame):
 
     def create_bottom_frame(self):
         bottom_frame = ctk.CTkFrame(self.main_frame)
-        bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+        bottom_frame.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
+        ctk.CTkLabel(bottom_frame, text='').pack()
         self.back_button = ctk.CTkButton(bottom_frame, text='Back', command=self.master.create_client_main_frame)
         self.back_button.pack(pady=1)
         ctk.CTkLabel(bottom_frame, text='').pack()
 
     def create_labeled_entry(self, frame, label_text, state='normal'):
-        ctk.CTkLabel(frame, text='').pack()
         ctk.CTkLabel(frame, text=label_text).pack(padx=5)
         entry = ctk.CTkEntry(frame, width=260, state=state)
         entry.pack(padx=10, pady=1)
+        ctk.CTkLabel(frame, text='').pack()
         return entry
 
     def toggle_edit_mode(self):
@@ -98,25 +102,32 @@ class ProfileFrame(ctk.CTkFrame):
 
     def enable_buttons(self, state):
         state = 'normal' if state else 'disabled'
-        for entry in [self.name_entry, self.surname_entry, self.phone_entry, self.address_entry, self.email_entry]:
+        for entry in [self.name_entry, self.surname_entry, self.phone_entry, self.address_entry]:
             entry.configure(state=state)
 
     def load_profile(self):
         try:
             self.enable_buttons(True)
-            #self.id_entry.insert(0, self.master.user.id)
+            self.email_entry.configure(state='normal')
+            self.email_entry.delete(0, 'end')
             self.email_entry.insert(0, self.master.user.email)
+            self.email_entry.configure(state='disabled')
 
             client_info = self.master.user.client_info
             if client_info:
                 if client_info.name:
+                    self.name_entry.delete(0, 'end')
                     self.name_entry.insert(0, client_info.name)
                 if client_info.surname:
+                    self.surname_entry.delete(0, 'end')
                     self.surname_entry.insert(0, client_info.surname)
                 if client_info.phone:
+                    self.phone_entry.delete(0, 'end')
                     self.phone_entry.insert(0, client_info.phone)
                 if client_info.address:
+                    self.address_entry.delete(0, 'end')
                     self.address_entry.insert(0, client_info.address)
+                self.balance_entry.delete(0, 'end')
                 self.balance_entry.insert(0, client_info.balance)
         except requests.exceptions.RequestException as e:
             utils.ErrorDialog(self, message=f'Failed to load profile: {e}!').show()

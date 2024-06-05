@@ -86,6 +86,7 @@ class ReviewFrame(ctk.CTkFrame):
             f"http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/review/{self.review_type}/{self.product_id}",
             json=data)
         print(response.json())
+        # TODO doesn't work
 
         if response.status_code == 200:
             self.show_success_dialog()

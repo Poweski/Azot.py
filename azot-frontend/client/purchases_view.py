@@ -4,6 +4,7 @@ import customtkinter as ctk
 from shared import utils
 from app_settings import *
 from datetime import datetime
+from functools import partial
 
 
 class PurchasesView(ctk.CTkFrame):
@@ -19,7 +20,7 @@ class PurchasesView(ctk.CTkFrame):
 
         self.setup_top_frame(self.main_frame)
 
-        self.products_frame = ctk.CTkFrame(self.main_frame, fg_color='#313335')
+        self.products_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color='#313335')
         self.products_frame.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
 
         self.main_frame.columnconfigure(0, weight=1)
@@ -66,6 +67,7 @@ class PurchasesView(ctk.CTkFrame):
             if products_data:
                 for product_data in products_data:
                     purchase = {
+                        'product_id': product_data['product_id'],
                         'product': product_data['product'],
                         'quantity': product_data['quantity'],
                         'date': product_data['date'],
@@ -109,6 +111,28 @@ class PurchasesView(ctk.CTkFrame):
         ctk.CTkLabel(product_frame, text=f"Cost: $ {purchase['cost']}").pack(padx=5, pady=5)
         ctk.CTkLabel(product_frame, text=f"Date: {formatted_date}").pack(padx=5, pady=5)
         ctk.CTkLabel(product_frame, text=f"Time: {formatted_time}").pack(padx=5, pady=5)
+
+        review_product_command = partial(self.make_a_review, purchase['product_id'], 'product')
+        self.review_product_button = ctk.CTkButton(product_frame, text='Review product', command=review_product_command)
+        self.review_product_button.pack(padx=5, pady=5)
+
+        review_seller_command = partial(self.make_a_review, purchase['product_id'], 'seller')
+        self.review_seller_button = ctk.CTkButton(product_frame, text='Review seller', command=review_seller_command)
+        self.review_seller_button.pack(padx=5, pady=5)
+
+    def make_a_review(self, product_id, review_type):
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            product_data = response.json().get('content')
+            product = utils.create_product(product_data)
+            self.master.create_review_frame(product, review_type)
+
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
+        else:
+            utils.ErrorDialog(self, message='Failed to load product!').show()
 
     def show_error(self, response):
         utils.ErrorDialog(self, message=response.json().get('error')).show()

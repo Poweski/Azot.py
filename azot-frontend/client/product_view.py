@@ -145,7 +145,8 @@ class ProductView(ctk.CTkFrame):
             load_thread.start()
 
             value = utils.InputDialog(self, title='Add to cart', message='Enter the amount:').show()
-            if not value:
+            quantity = int(value)
+            if quantity <= 0:
                 raise ValueError
 
             load_thread.join()

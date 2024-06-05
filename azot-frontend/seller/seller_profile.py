@@ -70,15 +70,19 @@ class ProfileFrame(ctk.CTkFrame):
     def load_profile(self):
         try:
             user = self.master.user
+            self.entries['email'].delete(0, 'end')
             self.entries['email'].insert(0, user.email)
             seller_info = user.seller_info
 
             if seller_info:
                 if seller_info.organization:
+                    self.entries['organization'].delete(0, 'end')
                     self.entries['organization'].insert(0, seller_info.organization)
                 if seller_info.phone:
+                    self.entries['phone'].delete(0, 'end')
                     self.entries['phone'].insert(0, seller_info.phone)
                 if seller_info.address:
+                    self.entries['address'].delete(0, 'end')
                     self.entries['address'].insert(0, seller_info.address)
 
         except requests.RequestException as e:

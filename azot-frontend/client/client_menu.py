@@ -101,10 +101,10 @@ class MainMenuFrame(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
         image_label.pack()
-        ctk.CTkLabel(product_frame, text=f'Price: ${product.price:.2f}').pack()
-        ctk.CTkLabel(product_frame, text=f'Items available: {product.items_available}').pack()
+        ctk.CTkLabel(product_frame, text=f'Price: ${product.price:.2f}').pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f'Items available: {product.items_available}').pack(padx=10)
         check_command = partial(self.check_product, product.id)
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10, pady=5)
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10)
 
     def shuffle_offers(self):
         self.master.viewed_products.clear()
@@ -148,10 +148,10 @@ class MainMenuFrame(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
         image_label.pack()
-        ctk.CTkLabel(product_frame, text=f'Price: ${product_data['price']:.2f}').pack()
-        ctk.CTkLabel(product_frame, text=f'Items available: {product_data['items_available']}').pack()
+        ctk.CTkLabel(product_frame, text=f'Price: ${product_data['price']:.2f}').pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f'Items available: {product_data['items_available']}').pack(padx=10)
         check_command = partial(self.check_product, product_id)
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10, pady=5)
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10)
 
     def show_error(self, message):
         utils.ErrorDialog(self, message=message).show()
@@ -184,7 +184,7 @@ class MainMenuFrame(ctk.CTkFrame):
                 thread = threading.Thread(target=self.update_product_view3, args=(product_frame, placeholder_label, product))
                 thread.start()
         else:
-            self.show_error()
+            self.show_error(message=response.json().get('error'))
 
     def update_product_view3(self, product_frame, placeholder_label, product):
         self.master.viewed_products.append(utils.create_product(product))
@@ -198,10 +198,10 @@ class MainMenuFrame(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
         image_label.pack()
-        ctk.CTkLabel(product_frame, text=f'Price: ${product['price']:.2f}').pack()
-        ctk.CTkLabel(product_frame, text=f'Items available: {product['items_available']}').pack()
+        ctk.CTkLabel(product_frame, text=f'Price: ${product['price']:.2f}').pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f'Items available: {product['items_available']}').pack(padx=10)
         check_command = partial(self.check_product, product['id'])
-        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack()
+        ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10)
 
     def log_out(self):
         dialog = utils.ConfirmDialog(self, title='Log Out', message='Are you sure you want to log out?')

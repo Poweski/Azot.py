@@ -19,7 +19,7 @@ class OrdersView(ctk.CTkFrame):
 
         self.setup_top_frame(self.main_frame)
 
-        self.products_frame = ctk.CTkFrame(self.main_frame, fg_color='#313335')
+        self.products_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color='#313335')
         self.products_frame.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
 
         self.main_frame.columnconfigure(0, weight=1)

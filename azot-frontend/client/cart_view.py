@@ -41,7 +41,7 @@ class CartView(ctk.CTkFrame):
         right_bottom_frame.grid(row=2, column=1, sticky='nsew', padx=10, pady=10)
 
         ctk.CTkLabel(right_top_frame, text='').pack()
-        ctk.CTkLabel(right_top_frame, text='Cart', font=('Helvetica', 20, 'bold')).pack(padx=5, pady=10)
+        ctk.CTkLabel(right_top_frame, text='Cart', font=('Helvetica', 24, 'bold')).pack(padx=5, pady=20)
         ctk.CTkLabel(right_top_frame, text='').pack()
 
         ctk.CTkLabel(right_mid_frame, text='').pack()
@@ -126,6 +126,11 @@ class CartView(ctk.CTkFrame):
             self.show_no_products(placeholder_label)
 
     def show_no_products(self, placeholder_label):
+        self.total = 0
+        self.total_entry.configure(state='normal')
+        self.total_entry.delete(0, 'end')
+        self.total_entry.insert(0, f'$ {self.total}')
+        self.total_entry.configure(state='disabled')
         placeholder_label.pack_forget()
         ctk.CTkLabel(self.placeholder_frame, text='No products in cart', font=('Helvetica', 20)).grid(padx=5, pady=10)
 
@@ -158,4 +163,3 @@ class CartView(ctk.CTkFrame):
                 _product = product
         edit_message = edit_dialog.EditDialog(self, self.cart, product_id, title=_product.name)
         edit_message.show()
-        self.display_offers()

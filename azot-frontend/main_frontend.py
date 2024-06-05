@@ -3,11 +3,10 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
-# TODO insert review buttons in purchase views
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
 
-# TODO settings bugs
+# TODO create products that didn't appear in popular offers
 # TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
 
 
