@@ -8,16 +8,17 @@ def custom_exception_handler(exc, context):
     try:
         exception_class = exc.__class__.__name__
         handlers = {
-            'NotAuthenticated': _handler_authentication_error,
             'IntegrityError': _handler_integrity_error,
             'ValidationError': _handler_validation_error,
             'DoesNotExist': _handler_not_found,
             'PurchaseError': _handler_purchase_error,
             'PermissionDenied': _handler_permission_denied,
             'NotActivated': _handler_not_activated
+            'WrongPasswordError': _handler_wrong_password_error,
             # Add more handlers as needed
         }
         res = exception_handler(exc, context)
+
         if exception_class in handlers:
             # calling hanlder based on the custom
             message, status_code = handlers[exception_class](exc, context, res)
@@ -28,15 +29,12 @@ def custom_exception_handler(exc, context):
 
         return Response(data={'error': message}, status=status_code)
     except Exception as e:
+        print(e)
         return Response(data={'error': 'Internal server error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def _handler_validation_error(exc, context, res):
     return "Invalid data", 400
-
-
-def _handler_authentication_error(exc, context, res):
-    return "Password is incorrect", 400
 
 
 def _handler_integrity_error(exc, context, res):
@@ -49,20 +47,23 @@ def _handler_integrity_error(exc, context, res):
 
 
 def _handler_not_found(exc, context, res):
-    # if 'Client' in context['view'].__class__.__name__:
-    #     return "Client not found", 400
-    # elif 'Seller' in context['view'].__class__.__name__:
-    #     return "Seller not found", 400
-    # else:
-    return "Not found", 400
+    if 'Login' in context['view'].__class__.__name__:
+        return "Wrong email or password", 400
+    else:
+        return str(exc), 404
+
 
 
 def _handler_purchase_error(exc, context, res):
-    return "Transaction failed.", 400
+    return exc.detail, 400
 
 
 def _handler_permission_denied(exc, context, res):
-    return "Permission denied", 400
+    return exc.detail, 400
 
 def _handler_not_activated(exc, context, res):
     return "Your account is not activated yet. Please check your email.", 400
+
+
+def _handler_wrong_password_error(exc, context, res):
+    return exc.detail, 400

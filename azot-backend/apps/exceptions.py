@@ -7,7 +7,7 @@ class PurchaseError(APIException):
     default_code = 'purchase_error'
 
 class PermissionDenied(APIException):
-    status_code = 403
+    status_code = 400
     default_detail = 'You do not have permission to perform this action.'
     default_code = 'permission_denied'
 
@@ -15,3 +15,8 @@ class NotActivated(APIException):
     status_code = 400
     default_detail = 'Your account is not activated yet. Please check your email.'
     default_code = 'not_activated'
+
+class WrongPasswordError(APIException):
+    status_code = 400
+    default_detail = 'Password is incorrect.'
+    default_code = 'wrong_password'

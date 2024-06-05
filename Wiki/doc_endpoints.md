@@ -55,15 +55,132 @@ response:
             "organization": "string",
             "phone": "string",
             "address": "string"
+        }
+    }
+}
+```
+- **POST** /api/client/login
+<br> request:
+```json
+{
+  "content": {
+    "email": "string",
+    "id": "string"
+  }
+}
+```
+response:
+```json
+{
+  "content": {
+        "id": "d4a83f44-a5f0-4c1e-9666-6febde8fbf9c",
+        "email": "test@example.com",
+        "client_info": {
+            "name": "string",
+            "surname": "string",
+            "phone": "string",
+            "address": "string",
+            "balance": 99388.4
+        }
+    }
+}
+```
+## Seller Add Product Seller Get all Products
+- **GET** /api/seller/{seller_id}/product
+<br> response:
+```json
+{
+  "content": [
+    {
+        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+        "name": "product23",
+        "price": 122.32,
+        "description": "description",
+        "image": "https://picsum.photos/id/237/200/300",
+        "owner": {
+          "email": "string",
+            "seller_info": {
+                "organization": null
+            },
+            "average_rating": 5.0,
+            "reviews": [
+                {
+                    "text": "dwa",
+                    "rating": 5,
+                    "client": {
+                        "name": "string",
+                        "surname": "string"
+                    }
+                },
+                {
+                    // another review
+                }
+            ]
         },
-        "products": [
-                  {
+        "average_rating": 4.0,
+        "reviews": [
+            {
+                "text": "good",
+                "rating": 5,
+                "client": {
+                      "name": "string",
+                      "surname": "string"
+                }
+            },
+            {
+                // another review
+            }
+        ],
+        "items_available": 3,
+        "tags": "test"
+    },
+    {
+        // another product
+    }
+  ]
+}
+```
+- **POST** /api/seller/{seller_id}/product
+<br> request:
+```json
+{
+    "name": "string",
+    "price": "float",
+    "description": "string",
+    "image": "string",
+    "tags": "string",
+    "items_available": "int"
+}
+```
+response:
+```json
+{
+  "content": {
+    "id": "string"
+  }
+}
+```
+# Get Products
+## Get Products according to tags and name
+- **POST** /api/product
+<br> request:
+```json
+{
+    "request": "string"
+}
+```
+response:
+```json
+{
+  "content": [
+    {
                         "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
                         "name": "product23",
                         "price": 122.32,
                         "description": "description",
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
+                          "email": "string",
                             "seller_info": {
                                 "organization": null
                             },
@@ -100,133 +217,11 @@ response:
                         "tags": "test"
                     },
                     {
-                      // another product
+                   // another product
                     }
-                
-        ],
-        "purchases": [
-            {
-                "product": "string",
-                "quantity": 2,
-                "date": "2024-05-18T09:23:59.862403Z",
-                "cost": 244.64
-            },
-            {
-            // another purchase
-            }
-        ]
-    }
+  ]
 }
 ```
-- **POST** /api/client/login
-<br> request:
-```json
-{
-  "content": {
-    "email": "string",
-    "id": "string"
-  }
-}
-```
-response:
-```json
-{
-  "content": {
-        "id": "d4a83f44-a5f0-4c1e-9666-6febde8fbf9c",
-        "email": "test@example.com",
-        "client_info": {
-            "name": "string",
-            "surname": "string",
-            "phone": "string",
-            "address": "string",
-            "balance": 99388.4
-        },
-        "cart": {
-            "orders": [
-                {
-                    "quantity": 2,
-                    "product": {
-                        "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
-                        "name": "product23",
-                        "price": 122.32,
-                        "description": "description",
-                        "image": "https://picsum.photos/id/237/200/300",
-                        "owner": {
-                            "seller_info": {
-                                "organization": null
-                            },
-                            "average_rating": 5.0,
-                            "reviews": [
-                                {
-                                    "text": "dwa",
-                                    "rating": 5,
-                                    "client": {
-                                        "name": "string",
-                                        "surname": "string"
-                                    }
-                                },
-                                {
-                                    // another review
-                                }
-                            ]
-                        },
-                        "average_rating": 4.0,
-                        "reviews": [
-                            {
-                                "text": "good",
-                                "rating": 5,
-                                "client": {
-                                      "name": "string",
-                                      "surname": "string"
-                                }
-                            },
-                            {
-                                // another review
-                            }
-                        ],
-                        "items_available": 3,
-                        "tags": "test"
-                    }
-                },
-                {
-                // another order
-                }
-            ]
-        },
-        "purchases": [
-            {
-                "product": "product23",
-                "quantity": 2,
-                "date": "2024-05-18T09:23:59.862403Z",
-                "cost": 244.64
-            },
-            {
-                // another purchase
-            }
-        ]
-    }
-}
-```
-## Add Product
-- **POST** /api/seller/{seller_id}/product
-<br> request:
-```json
-{
-    "name": "string",
-    "price": "float",
-    "description": "string",
-    "image": "string",
-    "tags": "string",
-    "items_available": "int"
-}
-```
-response:
-```json
-{
-  "content": "success"
-}
-```
-## Get Products
 - **GET** /api/product
 <br> response:
 ```json
@@ -239,6 +234,7 @@ response:
                         "description": "description",
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
+                          "email": "string",
                             "seller_info": {
                                 "organization": null
                             },
@@ -350,6 +346,7 @@ response:
                         "description": "description",
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
+                          "email": "string",
                             "seller_info": {
                                 "organization": null
                             },
@@ -440,6 +437,7 @@ response:
                         "description": "description",
                         "image": "https://picsum.photos/id/237/200/300",
                         "owner": {
+                          "email": "string",
                             "seller_info": {
                                 "organization": null
                             },
@@ -524,6 +522,66 @@ response:
 
 
 # Client Cart
+## get cart
+- **GET** /api/client/{client_id}/cart
+<br> response:
+```json
+{
+  "content": {
+    "orders": [
+        {
+            "quantity": 2,
+            "product": {
+                "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+                "name": "product23",
+                "price": 122.32,
+                "description": "description",
+                "image": "https://picsum.photos/id/237/200/300",
+                "owner": {
+                  "email": "string",
+                    "seller_info": {
+                        "organization": null
+                    },
+                    "average_rating": 5.0,
+                    "reviews": [
+                        {
+                            "text": "dwa",
+                            "rating": 5,
+                            "client": {
+                                "name": "string",
+                                "surname": "string"
+                            }
+                        },
+                        {
+                            // another review
+                        }
+                    ]
+                },
+                "average_rating": 4.0,
+                "reviews": [
+                    {
+                        "text": "good",
+                        "rating": 5,
+                        "client": {
+                              "name": "string",
+                              "surname": "string"
+                        }
+                    },
+                    {
+                        // another review
+                    }
+                ],
+                "items_available": 3,
+                "tags": "test"
+            }
+        },
+        {
+            // another order
+        }
+    ]
+  }
+}
+```
 ## add products to cart
 - **PUT** /api/client/{client_id}/cart
 <br> request:
@@ -558,6 +616,48 @@ response:
   "content": "success"
 }
 ```
+
+# Client Purchases
+## get purchases
+- **GET** /api/client/{client_id}/purchases
+<br> response:
+```json
+{
+  "content": [
+    {
+        "product_id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+        "product": "product23",
+        "quantity": 2,
+        "date": "2024-05-18T09:23:59.862403Z",
+        "cost": 244.64
+    },
+    {
+        // another purchase
+    }
+  ]
+}
+```
+
+# Seller Purchases
+## get purchases
+- **GET** /api/seller/{seller_id}/purchases
+<br> response:
+```json
+{
+  "content": [
+    {
+        "product_id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+        "product": "product23",
+        "quantity": 2,
+        "date": "2024-05-18T09:23:59.862403Z",
+        "cost": 244.64
+    },
+    {
+        // another purchase
+    }
+  ]
+}
+```
 # Reviews
 ## Add Product Review
 - **POST** /api/client/{client_id}/product/review/{product_id}
@@ -590,6 +690,107 @@ response:
 }
 ```
 
+## Get Random Product
+- **GET** /api/product/random
+<br> response:
+```json
+{
+  "content": {
+    "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+    "name": "product23",
+    "price": 122.32,
+    "description": "description",
+    "image": "https://picsum.photos/id/237/200/300",
+    "owner": {
+        "email": "string",
+        "seller_info": {
+            "organization": null
+        },
+        "average_rating": 5.0,
+        "reviews": [
+            {
+                "text": "dwa",
+                "rating": 5,
+                "client": {
+                    "name": "string",
+                    "surname": "string"
+                }
+            },
+            {
+                // another review
+            }
+        ]
+    },
+    "average_rating": 4.0,
+    "reviews": [
+        {
+            "text": "good",
+            "rating": 5,
+            "client": {
+                  "name": "string",
+                  "surname": "string"
+            }
+        },
+        {
+            // another review
+        }
+    ],
+    "items_available": 3,
+    "tags": "test"
+  }
+}
+```
+
+## Get Product by ID
+- **GET** /api/product/id/{product_id}
+<br> response:
+```json
+{
+  "content": {
+    "id": "1f154d40-bf20-40ab-90d0-c86740a538dc",
+    "name": "product23",
+    "price": 122.32,
+    "description": "description",
+    "image": "https://picsum.photos/id/237/200/300",
+    "owner": {
+        "email": "string",
+        "seller_info": {
+            "organization": null
+        },
+        "average_rating": 5.0,
+        "reviews": [
+            {
+                "text": "dwa",
+                "rating": 5,
+                "client": {
+                    "name": "string",
+                    "surname": "string"
+                }
+            },
+            {
+                // another review
+            }
+        ]
+    },
+    "average_rating": 4.0,
+    "reviews": [
+        {
+            "text": "good",
+            "rating": 5,
+            "client": {
+                  "name": "string",
+                  "surname": "string"
+            }
+        },
+        {
+            // another review
+        }
+    ],
+    "items_available": 3,
+    "tags": "test"
+  }
+}
+```
 # Forgot Password
 - **POST** /api/password/forgot
 <br> request:
