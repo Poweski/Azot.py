@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.serializers.tojson.client_serializers import ClientOutSerializer, ClientOutWithInfoSerializer
@@ -21,9 +20,9 @@ from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
 from apps.utils.password_validator import validate_password
 
 
-from apps.mail_sender import sendmail
+from apps.utils.mail_sender import sendmail
 
-from apps.models import Client, Seller, Product, Purchase, Cart, Order, ProductReview, SellerReview, PasswordResetToken, ActivationToken
+from apps.models import Client, Seller, Product, Purchase, Order, ProductReview, SellerReview, PasswordResetToken, ActivationToken
 
 from apps.exceptions import PurchaseError, PermissionDenied, NotActivated
 
@@ -47,18 +46,22 @@ class ClientRegisterView(APIView):
 
 class ClientActivateView(APIView):
     def get(self, request, token_id):
-        atoken = ActivationToken.objects.get(id=token_id)
-        if atoken.expiration_date < timezone.now():
+        try:
+            atoken = ActivationToken.objects.get(id=token_id)
+            if atoken.expiration_date < timezone.now():
+                atoken.delete()
+                raise PermissionDenied("Activation token has expired")
+
+            instance = atoken.client
+            instance.isEnabled = True
+            instance.save()
+
             atoken.delete()
-            raise NotAuthenticated()
+            return render(request, 'successful-activate.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
 
-        instance = atoken.client
-        instance.isEnabled = True
-        instance.save()
 
-        atoken.delete()
-
-        return Response("Your account has been successfully activated", status=status.HTTP_200_OK)
 
 
 class ClientForgotPasswordView(APIView):
@@ -67,10 +70,10 @@ class ClientForgotPasswordView(APIView):
 
         instance = Client.objects.get(email=email)
         if not instance:
-            raise NotAuthenticated()
+            raise PermissionDenied("Client with this email does not exist")
 
         if not instance.isEnabled:
-            raise PermissionDenied()
+            raise NotActivated("Client account is not activated")
 
         prtoken = PasswordResetToken.objects.create(
             id=uuid.uuid4(),
@@ -93,7 +96,7 @@ class ClientLoginView(APIView):
 
         if instance.password == client.validated_data['password']:
             if not instance.isEnabled:
-                raise PermissionDenied()
+                raise NotActivated("Client account is not activated")
             else:
                 return Response({'content': ClientOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
@@ -119,18 +122,21 @@ class SellerRegisterView(APIView):
 
 class SellerActivateView(APIView):
     def get(self, request, token_id):
-        atoken = ActivationToken.objects.get(id=token_id)
-        if atoken.expiration_date < timezone.now():
+        try:
+            atoken = ActivationToken.objects.get(id=token_id)
+            if atoken.expiration_date < timezone.now():
+                atoken.delete()
+                raise PermissionDenied("Activation token has expired")
+
+            instance = atoken.seller
+            instance.isEnabled = True
+            instance.save()
+
             atoken.delete()
-            raise NotAuthenticated()
+            return render(request, 'successful-activate.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
 
-        instance = atoken.seller
-        instance.isEnabled = True
-        instance.save()
-
-        atoken.delete()
-
-        return Response("Your account has been successfully activated", status=status.HTTP_200_OK)
 
 
 class SellerForgotPasswordView(APIView):
@@ -139,10 +145,10 @@ class SellerForgotPasswordView(APIView):
 
         instance = Seller.objects.get(email=email)
         if not instance:
-            raise NotAuthenticated()
+            raise PermissionDenied("Seller with this email does not exist")
 
         if not instance.isEnabled:
-            raise PermissionDenied()
+            raise NotActivated("Seller account is not activated")
 
         prtoken = PasswordResetToken.objects.create(
             id=uuid.uuid4(),
@@ -164,7 +170,7 @@ class SellerLoginView(APIView):
         instance = Seller.objects.get(email=seller.validated_data['email'])
         if instance.password == seller.validated_data['password']:
             if not instance.isEnabled:
-                raise PermissionDenied()
+                raise NotActivated("Seller account is not activated")
             else:
                 return Response({'content': SellerOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
@@ -392,34 +398,39 @@ class UserChangePasswordView(APIView):
 
 def password_reset(request):
     if request.method == 'POST':
-        token_id = request.POST.get('token')
-        type = request.POST.get('type')
-        prtoken = PasswordResetToken.objects.get(id=token_id)
+        try:
+            token_id = request.POST.get('token')
+            type = request.POST.get('type')
+            prtoken = PasswordResetToken.objects.get(id=token_id)
 
-        if prtoken.expiration_date < timezone.now():
+            if prtoken.expiration_date < timezone.now():
+                prtoken.delete()
+                raise PermissionDenied("Password reset token has expired")
+
+            password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if password != confirm_password:
+                raise PermissionDenied("Passwords do not match")
+
+            validate_password(password)
+
+            if type == 'client':
+                instance = prtoken.client
+            elif type == 'seller':
+                instance = prtoken.seller
+            else:
+                raise PermissionDenied("Invalid user type")
+
+            instance.password = password
+            instance.save()
+
             prtoken.delete()
-            raise NotAuthenticated()
 
-        password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
+            return render(request, 'successful-reset.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
 
-        if password != confirm_password:
-            raise ValidationError()
-
-        if not password:
-            raise ValidationError()
-
-        if type == 'client':
-            instance = prtoken.client
-        else:
-            instance = prtoken.seller
-
-        instance.password = password
-        instance.save()
-
-        prtoken.delete()
-
-        return render(request, 'successful-reset.html')
 
     token = request.GET.get('token')
     type = request.GET.get('type')
