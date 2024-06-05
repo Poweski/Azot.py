@@ -1,4 +1,3 @@
-# exception_handler.py
 from rest_framework.response import Response
 from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.views import exception_handler
@@ -13,6 +12,7 @@ def custom_exception_handler(exc, context):
             'DoesNotExist': _handler_not_found,
             'PurchaseError': _handler_purchase_error,
             'PermissionDenied': _handler_permission_denied,
+            'NotActivated': _handler_not_activated,
             'WrongPasswordError': _handler_wrong_password_error,
             # Add more handlers as needed
         }
@@ -28,7 +28,6 @@ def custom_exception_handler(exc, context):
 
         return Response(data={'error': message}, status=status_code)
     except Exception as e:
-        print(e)
         return Response(data={'error': 'Internal server error'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -49,7 +48,7 @@ def _handler_not_found(exc, context, res):
     if 'Login' in context['view'].__class__.__name__:
         return "Wrong email or password", 400
     else:
-        return str(exc), 404
+        return str(exc), 400
 
 
 
@@ -58,6 +57,9 @@ def _handler_purchase_error(exc, context, res):
 
 
 def _handler_permission_denied(exc, context, res):
+    return exc.detail, 400
+
+def _handler_not_activated(exc, context, res):
     return exc.detail, 400
 
 

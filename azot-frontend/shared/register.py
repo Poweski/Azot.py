@@ -89,38 +89,13 @@ class RegistrationFrame(ctk.CTkFrame):
             return self.seller_email_entry.get(), self.seller_password_entry.get(), self.seller_confirm_password_entry.get()
 
     def handle_successful_registration(self, user_data, user_type, email, password):
-        if user_type == 'seller':
-            seller_info = SellerInfo(
-                organization='',
-                phone='',
-                address=''
-            )
-            self.master.user = Seller(
-                seller_id=user_data.get('id'),
-                email=email,
-                password=password,
-                seller_info=seller_info,
-                products=[]
-            )
-            self.master.create_seller_main_frame()
-        else:
-            client_info = ClientInfo(
-                name='',
-                surname='',
-                phone='',
-                address='',
-                balance=0.0
-            )
-            self.master.user = Client(
-                client_id=user_data.get('id'),
-                email=email,
-                password=password,
-                client_info=client_info,
-                cart=[],
-                purchases=[]
-            )
-            self.master.create_client_main_frame()
+        self.show_success_dialog(f'Activation link has been sent to your email')
+
 
     def show_error_dialog(self, message):
         error = ErrorDialog(self, message=message)
         error.show()
+
+    def show_success_dialog(self, message):
+        success = InfoDialog(self, message=message)
+        success.show()

@@ -3,8 +3,6 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
-# TODO merge release brunch
-# TODO merge develop-frontend brunch
 
 
 class App(ctk.CTk):

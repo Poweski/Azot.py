@@ -1,5 +1,3 @@
-import uuid
-
 from django.db import models
 
 
@@ -9,6 +7,7 @@ class Client(models.Model):
     password = models.CharField(max_length=100)
     client_info = models.OneToOneField('ClientInfo', on_delete=models.CASCADE, null=True, blank=True)
     cart = models.OneToOneField('Cart', on_delete=models.CASCADE)
+    isEnabled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.email
@@ -19,6 +18,7 @@ class Seller(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     seller_info = models.OneToOneField('SellerInfo', on_delete=models.CASCADE, null=True, blank=True)
+    isEnabled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.email
@@ -108,4 +108,16 @@ class SellerReview(models.Model):
     def __str__(self):
         return self.id
 
+
+class PasswordResetToken(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, null=True, blank=True)
+    expiration_date = models.DateTimeField()
+
+class ActivationToken(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, null=True, blank=True)
+    expiration_date = models.DateTimeField()
 

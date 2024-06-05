@@ -1,7 +1,11 @@
 import uuid
 from decimal import Decimal
+from datetime import timedelta
+from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.utils import timezone
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.serializers.tojson.client_serializers import ClientOutSerializer, ClientOutWithInfoSerializer
@@ -16,10 +20,11 @@ from apps.serializers.tojson.client_cart_serializer import CartOutSerializer
 from apps.utils.password_validator import validate_password
 
 
-from apps.models import Client, Seller, Product, Purchase, Cart, Order, ProductReview, SellerReview
+from apps.utils.mail_sender import sendmail
 
-from apps.exceptions import PurchaseError, PermissionDenied
+from apps.models import Client, Seller, Product, Purchase, Order, ProductReview, SellerReview, PasswordResetToken, ActivationToken
 
+from apps.exceptions import PurchaseError, PermissionDenied, NotActivated
 
 
 class ClientRegisterView(APIView):
@@ -27,7 +32,60 @@ class ClientRegisterView(APIView):
         client = ClientInSerializer(data=request.data)
         client.is_valid(raise_exception=True)
         instance = client.create(client.validated_data)
+
+        atoken = ActivationToken.objects.create(id=uuid.uuid4(),
+                                                client=instance,
+                                                expiration_date=timezone.now() + timedelta(minutes=60))
+
+        subject = 'Activation of your client account in Azot'
+        message = f'Hi {instance.email}, thank you for registering in Azot application. To activate your account, please click the link below:\n\nhttp://{settings.HOST_NAME}:{settings.APPLICATION_PORT}/api/client/activate/{atoken.id}'
+        sendmail(subject, message, instance.email)
+
         return Response({'content': ClientOutSerializer(instance).data}, status=status.HTTP_200_OK)
+
+
+class ClientActivateView(APIView):
+    def get(self, request, token_id):
+        try:
+            atoken = ActivationToken.objects.get(id=token_id)
+            if atoken.expiration_date < timezone.now():
+                atoken.delete()
+                raise PermissionDenied("Activation token has expired")
+
+            instance = atoken.client
+            instance.isEnabled = True
+            instance.save()
+
+            atoken.delete()
+            return render(request, 'successful-activate.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
+
+
+
+
+class ClientForgotPasswordView(APIView):
+    def post(self, request):
+        email = request.data['email']
+
+        instance = Client.objects.get(email=email)
+        if not instance:
+            raise PermissionDenied("Client with this email does not exist")
+
+        if not instance.isEnabled:
+            raise NotActivated("Client account is not activated")
+
+        prtoken = PasswordResetToken.objects.create(
+            id=uuid.uuid4(),
+            client=instance,
+            expiration_date=timezone.now() + timedelta(minutes=60)
+        )
+
+        subject = 'Password recovery in Azot'
+        message = f'Hi {instance.email}, to recover your password, please click the link below:\n\nhttp://{settings.HOST_NAME}:{settings.APPLICATION_PORT}/reset-password/?token={prtoken.id}&type=client'
+        sendmail(subject, message, email)
+
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 
 class ClientLoginView(APIView):
@@ -35,17 +93,74 @@ class ClientLoginView(APIView):
         client = ClientInSerializer(data=request.data)
         client.is_valid(raise_exception=True)
         instance = Client.objects.get(email=client.validated_data['email'])
+
         if instance.password == client.validated_data['password']:
-            return Response({'content': ClientOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
+            if not instance.isEnabled:
+                raise NotActivated("Client account is not activated")
+            else:
+                return Response({'content': ClientOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
             raise PermissionDenied("Wrong email or password")
+
 
 class SellerRegisterView(APIView):
     def post(self, request):
         seller = SellerInSerializer(data=request.data)
         seller.is_valid(raise_exception=True)
         instance = seller.create(seller.validated_data)
+
+        atoken = ActivationToken.objects.create(id=uuid.uuid4(),
+                                                seller=instance,
+                                                expiration_date=timezone.now() + timedelta(minutes=60))
+
+        subject = 'Activation of your seller account in Azot'
+        message = f'Hi {instance.email}, thank you for registering in Azot application. To activate your account, please click the link below:\n\nhttp://{settings.HOST_NAME}:{settings.APPLICATION_PORT}/api/seller/activate/{atoken.id}'
+        sendmail(subject, message, instance.email)
+
         return Response({'content': SellerOutSerializer(instance).data}, status=status.HTTP_200_OK)
+
+
+class SellerActivateView(APIView):
+    def get(self, request, token_id):
+        try:
+            atoken = ActivationToken.objects.get(id=token_id)
+            if atoken.expiration_date < timezone.now():
+                atoken.delete()
+                raise PermissionDenied("Activation token has expired")
+
+            instance = atoken.seller
+            instance.isEnabled = True
+            instance.save()
+
+            atoken.delete()
+            return render(request, 'successful-activate.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
+
+
+
+class SellerForgotPasswordView(APIView):
+    def post(self, request):
+        email = request.data['email']
+
+        instance = Seller.objects.get(email=email)
+        if not instance:
+            raise PermissionDenied("Seller with this email does not exist")
+
+        if not instance.isEnabled:
+            raise NotActivated("Seller account is not activated")
+
+        prtoken = PasswordResetToken.objects.create(
+            id=uuid.uuid4(),
+            seller=instance,
+            expiration_date=timezone.now() + timedelta(minutes=60)
+        )
+
+        subject = 'Password recovery in Azot'
+        message = f'Hi {instance.email}, to recover your password, please click the link below:\n\nhttp://{settings.HOST_NAME}:{settings.APPLICATION_PORT}/reset-password/?token={prtoken.id}&type=seller'
+        sendmail(subject, message, email)
+
+        return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 
 class SellerLoginView(APIView):
@@ -54,7 +169,10 @@ class SellerLoginView(APIView):
         seller.is_valid(raise_exception=True)
         instance = Seller.objects.get(email=seller.validated_data['email'])
         if instance.password == seller.validated_data['password']:
-            return Response({'content': SellerOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
+            if not instance.isEnabled:
+                raise NotActivated("Seller account is not activated")
+            else:
+                return Response({'content': SellerOutWithInfoSerializer(instance).data}, status=status.HTTP_200_OK)
         else:
             raise PermissionDenied("Wrong email or password")
 
@@ -70,6 +188,7 @@ class SellerAddProductView(APIView):
         product.is_valid(raise_exception=True)
         new_product = product.create(product.validated_data, seller)
         return Response({'content': ProductShortOutSerializer(new_product).data}, status=status.HTTP_200_OK)
+
 
 class GetProductsView(APIView):
     def get(self, request):
@@ -131,7 +250,6 @@ class ClientCartView(APIView):
 
             order.delete()
 
-
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 class ClientGetPurchasesView(APIView):
@@ -146,7 +264,6 @@ class SellerGetPurchasesView(APIView):
         purchases = seller.purchase_set.all()
         return Response({'content': PurchaseSerializer(purchases, many=True).data}, status=status.HTTP_200_OK)
 
-
 class ClientChangeInfoView(APIView):
     def put(self, request, client_id):
         client = Client.objects.get(id=client_id)
@@ -158,6 +275,7 @@ class ClientChangeInfoView(APIView):
     def get(self, request, client_id):
         client = Client.objects.get(id=client_id)
         return Response({'content': ClientOutWithInfoSerializer(client).data}, status=status.HTTP_200_OK)
+
 
 class SellerChangeInfoView(APIView):
     def put(self, request, seller_id):
@@ -182,6 +300,7 @@ class ClientAddBalanceView(APIView):
         client.client_info.balance += added_balance
         client.client_info.save()
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
 
 class SellerProductView(APIView):
     def put(self, request, seller_id, product_id):
@@ -225,6 +344,7 @@ class ClientBuyProductView(APIView):
 
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
+
 class ClientReviewProductView(APIView):
     def post(self, request, client_id, product_id):
         client = Client.objects.get(id=client_id)
@@ -240,6 +360,7 @@ class ClientReviewProductView(APIView):
         product_review.is_valid(raise_exception=True)
         product_review.create(product_review.validated_data, product, client)
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
+
 
 class ClientReviewSellerView(APIView):
     def post(self, request, client_id, product_id):
@@ -275,3 +396,46 @@ class UserChangePasswordView(APIView):
         return Response({'content': 'success'}, status=status.HTTP_200_OK)
 
 
+def password_reset(request):
+    if request.method == 'POST':
+        try:
+            token_id = request.POST.get('token')
+            type = request.POST.get('type')
+            prtoken = PasswordResetToken.objects.get(id=token_id)
+
+            if prtoken.expiration_date < timezone.now():
+                prtoken.delete()
+                raise PermissionDenied("Password reset token has expired")
+
+            password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if password != confirm_password:
+                raise PermissionDenied("Passwords do not match")
+
+            validate_password(password)
+
+            if type == 'client':
+                instance = prtoken.client
+            elif type == 'seller':
+                instance = prtoken.seller
+            else:
+                raise PermissionDenied("Invalid user type")
+
+            instance.password = password
+            instance.save()
+
+            prtoken.delete()
+
+            return render(request, 'successful-reset.html')
+        except Exception as e:
+            return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
+
+
+    token = request.GET.get('token')
+    type = request.GET.get('type')
+    context = {
+        'token': token,
+        'type': type,
+    }
+    return render(request, 'reset-password.html', context)
