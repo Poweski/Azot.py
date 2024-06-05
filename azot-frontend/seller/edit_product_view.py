@@ -155,48 +155,50 @@ class EditProductView(ctk.CTkFrame):
         self.enable_buttons(False)
 
     def save_product(self):
-        product_id = self.product.id
-        name = self.name_entry.get()
-        price = float(self.price_entry.get())
-        items_available = int(self.items_available_entry.get())
-        tags = self.tags_textbox.get('1.0', ctk.END).strip()
-        description = self.description_textbox.get('1.0', ctk.END).strip()
-        image_url = self.image_url_entry.get().strip()
+        try:
+            product_id = self.product.id
+            name = self.name_entry.get()
+            price = float(self.price_entry.get())
+            items_available = int(self.items_available_entry.get())
+            tags = self.tags_textbox.get('1.0', ctk.END).strip()
+            description = self.description_textbox.get('1.0', ctk.END).strip()
+            image_url = self.image_url_entry.get().strip()
 
-        data = {
-            "name": name,
-            "price": price,
-            "description": description,
-            "image": image_url,
-            "tags": tags,
-            "items_available": items_available
-        }
+            data = {
+                "name": name,
+                "price": price,
+                "description": description,
+                "image": image_url,
+                "tags": tags,
+                "items_available": items_available
+            }
 
-        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product/{product_id}'
-        response = requests.put(url, json=data)
+            url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product/{product_id}'
+            response = requests.put(url, json=data)
 
-        if response.status_code == 200:
-            for product in self.master.user.products:
-                if product.id == self.product.id:
-                    product.name = name
-                    product.price = price
-                    product.description = description
-                    product.image = image_url
-                    product.items_available = items_available
-                    product.tags = tags
+            if response.status_code == 200:
+                for product in self.master.user.products:
+                    if product.id == self.product.id:
+                        product.name = name
+                        product.price = price
+                        product.description = description
+                        product.image = image_url
+                        product.items_available = items_available
+                        product.tags = tags
 
-            self.image_url = image_url
-            image_data = urlopen(self.image_url).read()
-            image_pil = Image.open(io.BytesIO(image_data))
-            new_size = (450, 230)
-            image_pil_resized = image_pil.resize(new_size, Image.LANCZOS)
-            self.image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
-            self.image_label.configure(image=self.image_ctk)
-            utils.InfoDialog(self, title='Success', message='Product data updated successfully').show()
-        elif response.status_code == 400:
-            utils.ErrorDialog(self, message=response.json()['error']).show()
-        else:
-            utils.ErrorDialog(self, message='Failed to update product data').show()
+                self.image_url = image_url
+                image_data = urlopen(self.image_url).read()
+                image_pil = Image.open(io.BytesIO(image_data))
+                new_size = (450, 230)
+                image_pil_resized = image_pil.resize(new_size, Image.LANCZOS)
+                self.image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
+                self.image_label.configure(image=self.image_ctk)
+                utils.InfoDialog(self, title='Success', message='Product data updated successfully').show()
+            elif response.status_code == 400:
+                utils.ErrorDialog(self, message=response.json()['error']).show()
+            else:
+                utils.ErrorDialog(self, message='Failed to update product data').show()
+        except ValueError:
+            utils.ErrorDialog(self, message='Incorrect value provided!').show()
 
         self.load_product()
-

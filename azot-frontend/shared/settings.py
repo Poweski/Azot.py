@@ -1,6 +1,6 @@
 import requests
-
 from .utils import *
+from app_settings import *
 
 
 class SettingsFrame(ctk.CTkFrame):
@@ -31,14 +31,17 @@ class SettingsFrame(ctk.CTkFrame):
     def create_title_frame(self):
         title_frame = ctk.CTkFrame(self.main_frame)
         title_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+        ctk.CTkLabel(title_frame, text='').pack()
         title_label = ctk.CTkLabel(title_frame, text='Settings', font=('Helvetica', 24, 'bold'))
-        title_label.pack(pady=10)
+        title_label.pack(pady=1)
+        ctk.CTkLabel(title_frame, text='').pack()
 
     def create_view_frame(self):
         view_frame = ctk.CTkFrame(self.main_frame)
         view_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
-
+        ctk.CTkLabel(view_frame, text='').pack()
         ctk.CTkLabel(view_frame, text='Change View', font=('Helvetica', 20)).pack(padx=10, pady=10)
+        ctk.CTkLabel(view_frame, text='').pack()
         self.create_scaling_option(view_frame)
         self.create_theme_option(view_frame)
         self.create_fullscreen_option(view_frame)
@@ -69,8 +72,9 @@ class SettingsFrame(ctk.CTkFrame):
     def create_password_frame(self):
         password_frame = ctk.CTkFrame(self.main_frame)
         password_frame.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
-
+        ctk.CTkLabel(password_frame, text='').pack()
         ctk.CTkLabel(password_frame, text='Change Password', font=('Helvetica', 20)).pack(padx=10, pady=10)
+        ctk.CTkLabel(password_frame, text='').pack()
         self.create_password_entries(password_frame)
         self.create_password_button(password_frame)
 
@@ -131,7 +135,7 @@ class SettingsFrame(ctk.CTkFrame):
             self.show_error_dialog('Passwords do not match')
             return
 
-        id= self.master.user.id
+        id = self.master.user.id
         password = self.password_entry.get()
         type = self.master.user_type
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{id}/change_password'

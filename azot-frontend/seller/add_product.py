@@ -59,14 +59,18 @@ class AddProductFrame(ctk.CTkFrame):
         self.product_image_entry.pack(padx=10, pady=5)
 
     def create_bottom_frame(self, parent):
+        ctk.CTkLabel(parent, text='').pack()
         ctk.CTkButton(parent, text='Add', command=self.add_product).pack(pady=10)
         ctk.CTkButton(parent, text='Cancel', command=self.master.create_seller_main_frame).pack(pady=10)
+        ctk.CTkLabel(parent, text='').pack()
 
     def create_right_frame(self, parent):
+        ctk.CTkLabel(parent, text='').pack()
         ctk.CTkLabel(parent, text='Description').pack(padx=10, pady=5)
         self.product_description_entry = ctk.CTkTextbox(parent, height=250, width=300)
         self.product_description_entry.pack(padx=10, pady=5)
 
+        ctk.CTkLabel(parent, text='').pack()
         ctk.CTkLabel(parent, text='Tags').pack(padx=10, pady=5)
         self.product_tags_entry = ctk.CTkTextbox(parent, height=100, width=300)
         self.product_tags_entry.pack(padx=10, pady=5)
@@ -81,24 +85,27 @@ class AddProductFrame(ctk.CTkFrame):
             utils.ErrorDialog(self, message=f'An unexpected error occurred: {e}').show()
 
     def collect_product_data(self):
-        name = self.product_name_entry.get().strip()
-        price = float(self.product_price_entry.get())
-        description = self.product_description_entry.get('1.0', 'end-1c').strip()
-        image = self.product_image_entry.get().strip()
-        tags = self.product_tags_entry.get('1.0', 'end-1c').strip()
-        items_available = int(self.product_items_available_entry.get())
+        try:
+            name = self.product_name_entry.get().strip()
+            price = float(self.product_price_entry.get())
+            description = self.product_description_entry.get('1.0', 'end-1c').strip()
+            image = self.product_image_entry.get().strip()
+            tags = self.product_tags_entry.get('1.0', 'end-1c').strip()
+            items_available = int(self.product_items_available_entry.get())
 
-        if not name or not image or not description or not tags:
-            raise ValueError("All fields must be filled in")
+            if not name or not image or not description or not tags:
+                raise ValueError("All fields must be filled in")
 
-        return {
-            'name': name,
-            'price': price,
-            'description': description,
-            'image': image,
-            'tags': tags,
-            'items_available': items_available
-        }
+            return {
+                'name': name,
+                'price': price,
+                'description': description,
+                'image': image,
+                'tags': tags,
+                'items_available': items_available
+            }
+        except ValueError:
+            utils.ErrorDialog(self, message='Incorrect value provided!').show()
 
     def send_product_data(self, data):
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/seller/{self.master.user.id}/product'

@@ -4,3 +4,4 @@ from .client_profile import *
 from .product_view import *
 from .review import *
 from .read_review import *
+from .purchases_view import *

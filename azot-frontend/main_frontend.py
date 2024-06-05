@@ -3,18 +3,8 @@ from client import *
 from seller import *
 import customtkinter as ctk
 
-
-# TODO add cart
-# TODO add purchases in client
-# TODO add orders in seller
-# TODO changing the number of items after purchase (refresh button)
-# TODO settings bugs
-
-# TODO insert review buttons in purchase views
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
-
-# TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
 
 
 class App(ctk.CTk):
@@ -43,6 +33,7 @@ class App(ctk.CTk):
         self.product_frame = None
         self.cart_frame = None
         self.forgot_password_frame = None
+        self.purchases_frame = None
         self.review_frame = None
         self.review_read_frame = None
 
@@ -57,6 +48,11 @@ class App(ctk.CTk):
         self.clear_frame()
         self.registration_frame = register.RegistrationFrame(self)
         self.registration_frame.pack(fill='both', expand=True)
+
+    def create_forgot_password_frame(self):
+        self.clear_frame()
+        self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
+        self.forgot_password_frame.pack(fill='both', expand=True)
 
     def create_seller_main_frame(self):
         self.clear_frame()
@@ -84,27 +80,37 @@ class App(ctk.CTk):
         self.add_product_frame.pack(fill='both', expand=True)
 
     def create_edit_product_frame(self, product_id):
-        _product = None
-        for product in self.user.products:
-            if product_id == product.id:
-                _product = product
-        self.clear_frame()
-        self.product_frame = edit_product_view.EditProductView(self, _product)
-        self.product_frame.pack(fill='both', expand=True)
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            product_data = response.json().get('content')
+            product = utils.create_product(product_data)
+            self.clear_frame()
+            self.product_frame = edit_product_view.EditProductView(self, product)
+            self.product_frame.pack(fill='both', expand=True)
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
+        else:
+            utils.ErrorDialog(self, message='Failed to load product!').show()
 
-    def create_forgot_password_frame(self):
+    def create_check_product_frame(self, product):
         self.clear_frame()
-        self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
-        self.forgot_password_frame.pack(fill='both', expand=True)
+        self.product_frame = product_view.ProductView(self, product)
+        self.product_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
-        _product = None
-        for product in self.viewed_products:
-            if product_id == product.id:
-                _product = product
-        self.clear_frame()
-        self.product_frame = product_view.ProductView(self, _product)
-        self.product_frame.pack(fill='both', expand=True)
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            product_data = response.json().get('content')
+            product = utils.create_product(product_data)
+            self.clear_frame()
+            self.product_frame = product_view.ProductView(self, product)
+            self.product_frame.pack(fill='both', expand=True)
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
+        else:
+            utils.ErrorDialog(self, message='Failed to load product!').show()
 
     def create_cart_frame(self):
         self.clear_frame()
@@ -112,27 +118,29 @@ class App(ctk.CTk):
         self.cart_frame.pack(fill='both', expand=True)
 
     def create_orders_frame(self):
-        pass
+        self.clear_frame()
+        self.purchases_frame = orders_view.OrdersView(self)
+        self.purchases_frame.pack(fill='both', expand=True)
 
     def create_purchases_frame(self):
-        pass
+        self.clear_frame()
+        self.purchases_frame = purchases_view.PurchasesView(self)
+        self.purchases_frame.pack(fill='both', expand=True)
 
     def create_settings_frame(self):
         self.clear_frame()
         self.settings_frame = settings.SettingsFrame(self)
         self.settings_frame.pack(fill='both', expand=True)
 
-    def create_review_frame(self, product, review_type):
+    def create_review_frame(self, product_id, review_type):
         self.clear_frame()
-        self.review_frame = review.ReviewFrame(self, product, review_type)
+        self.review_frame = review.ReviewFrame(self, product_id, review_type)
         self.review_frame.pack(fill='both', expand=True)
 
     def create_review_read_frame(self, product, review_type):
         self.clear_frame()
         self.review_read_frame = read_review.ReviewReadFrame(self, product, review_type)
         self.review_read_frame.pack(fill='both', expand=True)
-
-
 
     def clear_frame(self):
         for widget in self.winfo_children():

@@ -1,8 +1,6 @@
-import requests
 import customtkinter as ctk
-from shared import utils, ErrorDialog, InfoDialog
+from shared import utils
 
-from app_settings import *
 
 class ReviewReadFrame(ctk.CTkFrame):
     def __init__(self, master, product, review_type):
@@ -37,17 +35,16 @@ class ReviewReadFrame(ctk.CTkFrame):
         else:
             raise ValueError('Invalid review type')
 
-
         label_frame = ctk.CTkFrame(self.main_frame)
         label_frame.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
+        ctk.CTkLabel(label_frame, text='').pack()
         name_label = ctk.CTkLabel(label_frame, text=reviews_type, font=('Helvetica', 16, 'bold'))
         name_label.pack()
+        ctk.CTkLabel(label_frame, text='').pack()
 
     def create_reviews_frame(self):
         reviews_frame = ctk.CTkScrollableFrame(self.main_frame)
         reviews_frame.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
-
-
 
         if self.review_type == 'product':
             if not self.product.reviews:
@@ -64,7 +61,6 @@ class ReviewReadFrame(ctk.CTkFrame):
 
             for review in self.product.owner['reviews']:
                 self.create_review(reviews_frame, review)
-
 
     def create_review(self, parent, review):
         review_frame = ctk.CTkFrame(parent)
@@ -88,7 +84,8 @@ class ReviewReadFrame(ctk.CTkFrame):
         bottom_frame = ctk.CTkFrame(self.main_frame)
         bottom_frame.grid(row=2, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
 
+        ctk.CTkLabel(bottom_frame, text='').pack()
         return_button = ctk.CTkButton(bottom_frame, text='Return to Product',
                                       command=lambda: self.master.create_product_frame(self.product.id))
         return_button.pack(pady=10)
-
+        ctk.CTkLabel(bottom_frame, text='').pack()

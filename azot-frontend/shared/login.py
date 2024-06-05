@@ -1,5 +1,6 @@
 from .classes import *
 from .utils import *
+from app_settings import *
 import requests
 import threading
 
@@ -79,7 +80,8 @@ class LoginFrame(ctk.CTkFrame):
             self.master.user = self.create_client_user(user_data, email, password)
             self.master.create_client_main_frame()
 
-    def create_seller_user(self, user_data, email, password):
+    @staticmethod
+    def create_seller_user(user_data, email, password):
         seller_info_data = user_data.get('seller_info')
         seller_info = None
 
@@ -97,7 +99,8 @@ class LoginFrame(ctk.CTkFrame):
             products=[]
         )
 
-    def create_client_user(self, user_data, email, password):
+    @staticmethod
+    def create_client_user(user_data, email, password):
         client_info_data = user_data.get('client_info')
         client_info = None
         if client_info_data:
@@ -112,7 +115,9 @@ class LoginFrame(ctk.CTkFrame):
             client_id=user_data.get('id'),
             email=email,
             password=password,
-            client_info=client_info
+            client_info=client_info,
+            cart=[],
+            purchases=[]
         )
 
     def show_error_dialog(self, message):
