@@ -63,8 +63,8 @@ class ReviewFrame(ctk.CTkFrame):
         submit_button = ctk.CTkButton(review_frame, text='Submit Review', command=self.submit_review)
         submit_button.pack(pady=10)
 
-        return_button = ctk.CTkButton(review_frame, text='Return to Product',
-                                      command=lambda: self.master.create_product_frame(self.product_id))
+        return_button = ctk.CTkButton(review_frame, text='Return to Purchases',
+                                      command=lambda: self.master.create_purchases_frame())
         return_button.pack(pady=10)
 
     def combobox_callback(self, choice):
@@ -85,8 +85,6 @@ class ReviewFrame(ctk.CTkFrame):
         response = requests.post(
             f"http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/client/{self.master.user.id}/review/{self.review_type}/{self.product_id}",
             json=data)
-        print(response.json())
-        # TODO doesn't work
 
         if response.status_code == 200:
             self.show_success_dialog()

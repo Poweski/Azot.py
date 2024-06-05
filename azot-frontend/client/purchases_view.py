@@ -125,9 +125,7 @@ class PurchasesView(ctk.CTkFrame):
         response = requests.get(url)
 
         if response.status_code == 200:
-            product_data = response.json().get('content')
-            product = utils.create_product(product_data)
-            self.master.create_review_frame(product, review_type)
+            self.master.create_review_frame(product_id, review_type)
 
         elif response.status_code == 400:
             utils.ErrorDialog(self, message=response.json().get('error')).show()

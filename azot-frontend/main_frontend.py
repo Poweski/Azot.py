@@ -6,9 +6,6 @@ import customtkinter as ctk
 # TODO merge release brunch
 # TODO merge develop-frontend brunch
 
-# TODO create products that didn't appear in popular offers
-# TODO bug: search -> enter any offer -> return to the menu -> duplicate offers appear
-
 
 class App(ctk.CTk):
     def __init__(self):
@@ -83,13 +80,18 @@ class App(ctk.CTk):
         self.add_product_frame.pack(fill='both', expand=True)
 
     def create_edit_product_frame(self, product_id):
-        _product = None
-        for product in self.user.products:
-            if product_id == product.id:
-                _product = product
-        self.clear_frame()
-        self.product_frame = edit_product_view.EditProductView(self, _product)
-        self.product_frame.pack(fill='both', expand=True)
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            product_data = response.json().get('content')
+            product = utils.create_product(product_data)
+            self.clear_frame()
+            self.product_frame = edit_product_view.EditProductView(self, product)
+            self.product_frame.pack(fill='both', expand=True)
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
+        else:
+            utils.ErrorDialog(self, message='Failed to load product!').show()
 
     def create_check_product_frame(self, product):
         self.clear_frame()
@@ -97,13 +99,18 @@ class App(ctk.CTk):
         self.product_frame.pack(fill='both', expand=True)
 
     def create_product_frame(self, product_id):
-        _product = None
-        for product in self.viewed_products:
-            if product_id == product.id:
-                _product = product
-        self.clear_frame()
-        self.product_frame = product_view.ProductView(self, _product)
-        self.product_frame.pack(fill='both', expand=True)
+        url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            product_data = response.json().get('content')
+            product = utils.create_product(product_data)
+            self.clear_frame()
+            self.product_frame = product_view.ProductView(self, product)
+            self.product_frame.pack(fill='both', expand=True)
+        elif response.status_code == 400:
+            utils.ErrorDialog(self, message=response.json().get('error')).show()
+        else:
+            utils.ErrorDialog(self, message='Failed to load product!').show()
 
     def create_cart_frame(self):
         self.clear_frame()
@@ -125,9 +132,9 @@ class App(ctk.CTk):
         self.settings_frame = settings.SettingsFrame(self)
         self.settings_frame.pack(fill='both', expand=True)
 
-    def create_review_frame(self, product, review_type):
+    def create_review_frame(self, product_id, review_type):
         self.clear_frame()
-        self.review_frame = review.ReviewFrame(self, product, review_type)
+        self.review_frame = review.ReviewFrame(self, product_id, review_type)
         self.review_frame.pack(fill='both', expand=True)
 
     def create_review_read_frame(self, product, review_type):
