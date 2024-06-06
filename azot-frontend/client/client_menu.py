@@ -17,10 +17,10 @@ class MainMenuFrame(ctk.CTkFrame):
         window_size = utils.adjust_window(800, 600, master)
         master.geometry(window_size)
 
-        main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
-        main_frame.pack(fill='both', expand=True)
+        self.main_frame = ctk.CTkFrame(self, fg_color='#1c1c1c')
+        self.main_frame.pack(fill='both', expand=True)
 
-        left_frame = ctk.CTkFrame(main_frame, corner_radius=0)
+        left_frame = ctk.CTkFrame(self.main_frame, corner_radius=0)
         left_frame.grid(row=0, column=0, rowspan=3, padx=0, pady=0, sticky='nswe')
         ctk.CTkLabel(left_frame, text='Azot', font=('Helvetica', 20, 'bold')).pack(padx=20, pady=10)
         ctk.CTkLabel(left_frame, text='').pack()
@@ -34,18 +34,32 @@ class MainMenuFrame(ctk.CTkFrame):
         ctk.CTkButton(left_frame, text='Log Out', command=self.log_out).pack(padx=20, pady=10)
         ctk.CTkButton(left_frame, text='Close App', command=self.quit).pack(padx=20, pady=10)
 
-        top_frame = ctk.CTkFrame(main_frame)
+        top_frame = ctk.CTkFrame(self.main_frame)
         top_frame.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
         ctk.CTkLabel(top_frame, text='Welcome to Azot!', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
-        search_frame = ctk.CTkFrame(main_frame)
+        search_frame = ctk.CTkFrame(self.main_frame)
         search_frame.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
         self.search_entry = ctk.CTkEntry(search_frame, placeholder_text='What are you looking for?')
         self.search_entry.grid(column=1, row=0, sticky='ew')
         search_button = ctk.CTkButton(search_frame, text='Search', command=self.search)
         search_button.grid(column=2, row=0, padx=5, pady=5)
 
-        self.offers_frame = ctk.CTkFrame(main_frame, fg_color='#313335')
+        self.setup_products_frame()
+        self.display_offers()
+
+        self.main_frame.columnconfigure(0, weight=0)
+        self.main_frame.columnconfigure(1, weight=1)
+        self.main_frame.rowconfigure(0, weight=0)
+        self.main_frame.rowconfigure(1, weight=0)
+        self.main_frame.rowconfigure(2, weight=1)
+
+        search_frame.columnconfigure(0, weight=0)
+        search_frame.columnconfigure(1, weight=1)
+        search_frame.columnconfigure(2, weight=0)
+
+    def setup_products_frame(self):
+        self.offers_frame = ctk.CTkFrame(self.main_frame, fg_color='#313335')
         self.offers_frame.grid(row=2, column=1, padx=10, pady=10, sticky='nsew')
         self.popular_offers_label = ctk.CTkLabel(self.offers_frame, text='Popular offers:', font=('Helvetica', 18))
         self.popular_offers_label.grid(row=0, column=0, columnspan=2, padx=5, pady=10)
@@ -58,18 +72,6 @@ class MainMenuFrame(ctk.CTkFrame):
         self.offers_frame.rowconfigure(0, weight=0)
         self.offers_frame.rowconfigure(1, weight=1)
         self.offers_frame.rowconfigure(2, weight=1)
-
-        self.display_offers()
-
-        main_frame.columnconfigure(0, weight=0)
-        main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(0, weight=0)
-        main_frame.rowconfigure(1, weight=0)
-        main_frame.rowconfigure(2, weight=1)
-
-        search_frame.columnconfigure(0, weight=0)
-        search_frame.columnconfigure(1, weight=1)
-        search_frame.columnconfigure(2, weight=0)
 
     def display_offers(self):
         if not self.master.viewed_products:
@@ -167,6 +169,9 @@ class MainMenuFrame(ctk.CTkFrame):
 
         if response.status_code == 200:
             products_list = response.json().get('content')
+
+            self.setup_products_frame()
+
             row, column = 1, 0
             for product in products_list:
                 if column > 3:
@@ -180,6 +185,8 @@ class MainMenuFrame(ctk.CTkFrame):
 
                 placeholder_label = ctk.CTkLabel(product_frame, text='Loading...')
                 placeholder_label.pack()
+
+                column += 1
 
                 thread = threading.Thread(target=self.update_product_view3, args=(product_frame, placeholder_label, product))
                 thread.start()
