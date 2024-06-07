@@ -1,5 +1,66 @@
 import customtkinter as ctk
-from .classes import Product
+from .classes import *
+import requests
+
+
+def show_success_dialog(self):
+    InfoDialog(self, title='Success', message='Password changed successfully').show()
+
+
+def show_error_dialog(self, message):
+    ErrorDialog(self, message=message).show()
+
+
+def create_seller_user(user_data, email, password):
+    seller_info_data = user_data.get('seller_info')
+    seller_info = None
+
+    if seller_info_data:
+        seller_info = SellerInfo(
+            organization=seller_info_data.get('organization'),
+            phone=seller_info_data.get('phone'),
+            address=seller_info_data.get('address')
+        )
+
+    return Seller(
+        seller_id=user_data.get('id'),
+        email=email,
+        password=password,
+        seller_info=seller_info,
+        products=[],
+        purchases=[]
+    )
+
+
+def create_client_user(user_data, email, password):
+    client_info_data = user_data.get('client_info')
+    client_info = None
+
+    if client_info_data:
+        client_info = ClientInfo(
+            name=client_info_data.get('name'),
+            surname=client_info_data.get('surname'),
+            phone=client_info_data.get('phone'),
+            address=client_info_data.get('address'),
+            balance=client_info_data.get('balance')
+        )
+
+    return Client(
+        client_id=user_data.get('id'),
+        email=email,
+        password=password,
+        client_info=client_info,
+        cart=[],
+        purchases=[]
+    )
+
+
+def download_data(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        product_data = response.json().get('content')
+        return create_product(product_data)
+    return response.json().get('error')
 
 
 def adjust_window(window_width, window_height, app):

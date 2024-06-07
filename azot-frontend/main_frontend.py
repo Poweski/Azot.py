@@ -51,12 +51,12 @@ class App(ctk.CTk):
         self.forgot_password_frame = forgot_password.ForgotPasswordFrame(self)
         self.forgot_password_frame.pack(fill='both', expand=True)
 
-    def create_seller_main_frame(self):
+    def create_seller_menu_frame(self):
         self.clear_frame()
         self.main_frame = seller_menu.MainMenuFrame(self)
         self.main_frame.pack(fill='both', expand=True)
 
-    def create_client_main_frame(self):
+    def create_client_menu_frame(self):
         self.clear_frame()
         self.main_frame = client_menu.MainMenuFrame(self)
         self.main_frame.pack(fill='both', expand=True)
@@ -78,17 +78,13 @@ class App(ctk.CTk):
 
     def create_edit_product_frame(self, product_id):
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            product_data = response.json().get('content')
-            product = utils.create_product(product_data)
+        response = utils.download_data(url)
+        if isinstance(response, Product):
             self.clear_frame()
-            self.product_frame = edit_product_view.EditProductView(self, product)
+            self.product_frame = edit_product_view.EditProductView(self, response)
             self.product_frame.pack(fill='both', expand=True)
-        elif response.status_code == 400:
-            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
-            utils.ErrorDialog(self, message='Failed to load product!').show()
+            utils.ErrorDialog(self, message=response).show()
 
     def create_check_product_frame(self, product):
         self.clear_frame()
@@ -97,17 +93,13 @@ class App(ctk.CTk):
 
     def create_product_frame(self, product_id):
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/product/id/{product_id}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            product_data = response.json().get('content')
-            product = utils.create_product(product_data)
+        response = utils.download_data(url)
+        if isinstance(response, Product):
             self.clear_frame()
-            self.product_frame = product_view.ProductView(self, product)
+            self.product_frame = product_view.ProductView(self, response)
             self.product_frame.pack(fill='both', expand=True)
-        elif response.status_code == 400:
-            utils.ErrorDialog(self, message=response.json().get('error')).show()
         else:
-            utils.ErrorDialog(self, message='Failed to load product!').show()
+            utils.ErrorDialog(self, message=response).show()
 
     def create_cart_frame(self):
         self.clear_frame()
@@ -134,7 +126,7 @@ class App(ctk.CTk):
         self.review_frame = review.ReviewFrame(self, product_id, review_type)
         self.review_frame.pack(fill='both', expand=True)
 
-    def create_review_read_frame(self, product, review_type):
+    def create_read_review_frame(self, product, review_type):
         self.clear_frame()
         self.review_read_frame = read_review.ReviewReadFrame(self, product, review_type)
         self.review_read_frame.pack(fill='both', expand=True)

@@ -62,8 +62,6 @@ class ClientActivateView(APIView):
             return render(request, 'error-message.html', {'error_message': e.details if hasattr(e, 'details') else str(e)})
 
 
-
-
 class ClientForgotPasswordView(APIView):
     def post(self, request):
         email = request.data['email']

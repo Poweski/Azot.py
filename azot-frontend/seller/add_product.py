@@ -1,7 +1,8 @@
-import customtkinter as ctk
 import requests
+import customtkinter as ctk
 from shared import utils, classes
 from app_settings import *
+
 
 class AddProductFrame(ctk.CTkFrame):
     def __init__(self, master):

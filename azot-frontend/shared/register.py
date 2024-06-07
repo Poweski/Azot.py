@@ -1,7 +1,5 @@
-from .classes import *
-from .utils import *
-import requests
 import threading
+from .utils import *
 from app_settings import *
 
 
@@ -12,6 +10,10 @@ class RegistrationFrame(ctk.CTkFrame):
 
         window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
+
+        self.email_entry = None
+        self.password_entry = None
+        self.confirm_password_entry = None
 
         ctk.CTkLabel(self, text='Register', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
@@ -25,6 +27,8 @@ class RegistrationFrame(ctk.CTkFrame):
         self.create_registration_tab(self.seller_tab, 'seller')
 
     def create_registration_tab(self, tab, user_type):
+        self.master.user_type = user_type
+
         ctk.CTkLabel(tab, text='').grid(row=0, column=0, padx=10, pady=1)
         ctk.CTkLabel(tab, text='Email').grid(row=1, column=0, padx=10, pady=5)
         email_entry = ctk.CTkEntry(tab)
@@ -45,30 +49,25 @@ class RegistrationFrame(ctk.CTkFrame):
         ctk.CTkButton(tab, text='Register', command=register_command).grid(row=5, column=0, columnspan=2, pady=10)
         ctk.CTkButton(tab, text='Back to Login', command=back_command).grid(row=6, column=0, columnspan=2, pady=10)
 
-        if user_type == 'client':
-            self.master.user_type = 'client'
-            self.client_email_entry = email_entry
-            self.client_password_entry = password_entry
-            self.client_confirm_password_entry = confirm_password_entry
-        else:
-            self.master.user_type = 'seller'
-            self.seller_email_entry = email_entry
-            self.seller_password_entry = password_entry
-            self.seller_confirm_password_entry = confirm_password_entry
+        self.email_entry = email_entry
+        self.password_entry = password_entry
+        self.confirm_password_entry = confirm_password_entry
 
     def register_client(self):
-        thread = threading.Thread(target=self.register, args=('client',))
-        thread.start()
+        threading.Thread(target=self.register_function, args=('client',)).start()
 
     def register_seller(self):
-        thread = threading.Thread(target=self.register, args=('seller',))
-        thread.start()
+        threading.Thread(target=self.register_function, args=('seller',)).start()
 
-    def register(self, user_type):
-        email, password, confirm_password = self.get_registration_entries(user_type)
+    def register_function(self, user_type):
+        email = self.email_entry.get()
+        password = self.password_entry.get()
+        confirm_password = self.confirm_password_entry.get()
 
         if password != confirm_password:
-            self.master.after(0, self.show_error_dialog, 'Passwords do not match!')
+            self.password_entry.delete(0, 'end')
+            self.confirm_password_entry.delete(0, 'end')
+            self.master.after(0, show_error_dialog, 'Passwords do not match!')
             return
 
         url = f'http://{SERVER_HOST_NAME}:{SERVER_PORT}/api/{user_type}/register'
@@ -76,26 +75,12 @@ class RegistrationFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            self.master.after(0, self.handle_successful_registration, response.json(), user_type, email, password)
+            self.master.after(0, self.handle_successful_registration)
         elif response.status_code == 400:
-            self.master.after(0, self.show_error_dialog, response.json().get('error'))
+            self.master.after(0, show_error_dialog, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error_dialog, 'Server error!')
+            self.master.after(0, show_error_dialog, 'Server error!')
 
-    def get_registration_entries(self, user_type):
-        if user_type == 'client':
-            return self.client_email_entry.get(), self.client_password_entry.get(), self.client_confirm_password_entry.get()
-        else:
-            return self.seller_email_entry.get(), self.seller_password_entry.get(), self.seller_confirm_password_entry.get()
-
-    def handle_successful_registration(self, user_data, user_type, email, password):
-        self.show_success_dialog(f'Activation link has been sent to your email')
-
-
-    def show_error_dialog(self, message):
-        error = ErrorDialog(self, message=message)
-        error.show()
-
-    def show_success_dialog(self, message):
-        success = InfoDialog(self, message=message)
-        success.show()
+    @staticmethod
+    def handle_successful_registration():
+        show_success_dialog(f'Activation link has been sent to your email')

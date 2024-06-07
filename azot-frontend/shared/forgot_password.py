@@ -1,6 +1,5 @@
 from .utils import *
 from app_settings import *
-import requests
 
 
 class ForgotPasswordFrame(ctk.CTkFrame):
@@ -10,6 +9,9 @@ class ForgotPasswordFrame(ctk.CTkFrame):
 
         window_size = adjust_window(350, 400, master)
         master.geometry(window_size)
+
+        self.client_email_entry = None
+        self.seller_email_entry = None
 
         ctk.CTkLabel(self, text='Forgot Password', font=('Helvetica', 20, 'bold')).pack(pady=10)
 
@@ -27,7 +29,6 @@ class ForgotPasswordFrame(ctk.CTkFrame):
         ctk.CTkLabel(tab, text='Email        ').grid(row=1, column=0, padx=10, pady=5)
         email_entry = ctk.CTkEntry(tab)
         email_entry.grid(row=1, column=1, padx=10, pady=5)
-
         ctk.CTkLabel(tab, text='').grid(row=2, column=0, padx=10, pady=1)
 
         if user_type == 'client':
@@ -47,16 +48,8 @@ class ForgotPasswordFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            self.show_success_dialog()
+            InfoDialog(self, message='Message has been sent to your email.').show()
         elif response.status_code == 400:
-            self.show_error_dialog(response.json().get('error'))
+            ErrorDialog(self, message=response.json().get('error')).show()
         else:
-            self.show_error_dialog('Server Error')
-
-    def show_error_dialog(self, message):
-        error = ErrorDialog(self, message=message)
-        error.show()
-
-    def show_success_dialog(self):
-        success = InfoDialog(self, message='Message has been sent to your email.')
-        success.show()
+            ErrorDialog(self, message='Server Error').show()

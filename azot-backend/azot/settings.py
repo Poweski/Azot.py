@@ -127,4 +127,4 @@ EMAIL_HOST_PASSWORD = 'zuxhahghhcycwmvc'
 
 
 APPLICATION_PORT = 8080
-HOST_NAME = 'localhost'
+HOST_NAME = '192.168.10.35'

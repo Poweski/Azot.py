@@ -1,4 +1,3 @@
-import requests
 from .utils import *
 from app_settings import *
 
@@ -8,6 +7,10 @@ class SettingsFrame(ctk.CTkFrame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.scale_option_menu = None
+
+        self.main_frame = None
+        self.password_entry = None
+        self.confirm_password_entry = None
 
         self.setup_window()
         self.create_main_frame()
@@ -47,27 +50,26 @@ class SettingsFrame(ctk.CTkFrame):
         self.create_fullscreen_option(view_frame)
 
     def create_scaling_option(self, parent):
-        self.scale_label = ctk.CTkLabel(parent, text='Application scaling:')
-        self.scale_label.pack(padx=10)
+        scale_label = ctk.CTkLabel(parent, text='Application scaling:')
+        scale_label.pack(padx=10)
         scale_values = ['75%', '100%', '125%', '150%', '200%']
-        self.scale_option_menu = ctk.CTkOptionMenu(parent, values=scale_values, command=self.change_scaling)
-        self.scale_option_menu.set(self.master.scaling)
-        self.scale_option_menu.pack(padx=10, pady=10)
+        scale_option_menu = ctk.CTkOptionMenu(parent, values=scale_values, command=self.change_scaling)
+        scale_option_menu.set(self.master.scaling)
+        scale_option_menu.pack(padx=10, pady=10)
 
     def create_theme_option(self, parent):
-        self.theme_label = ctk.CTkLabel(parent, text='Theme:')
-        self.theme_label.pack(padx=10)
-        self.theme_option_menu = ctk.CTkOptionMenu(parent, values=['Light', 'Dark', 'System'],
-                                                   command=self.change_theme)
-        self.theme_option_menu.set(self.master.theme)
-        self.theme_option_menu.pack(padx=10, pady=10)
+        theme_label = ctk.CTkLabel(parent, text='Theme:')
+        theme_label.pack(padx=10)
+        theme_option_menu = ctk.CTkOptionMenu(parent, values=['Light', 'Dark', 'System'],command=self.change_theme)
+        theme_option_menu.set(self.master.theme)
+        theme_option_menu.pack(padx=10, pady=10)
 
     def create_fullscreen_option(self, parent):
-        self.fullscreen_label = ctk.CTkLabel(parent, text='Fullscreen:')
-        self.fullscreen_label.pack(padx=10)
-        self.fullscreen_option_menu = ctk.CTkOptionMenu(parent, values=['Off', 'On'], command=self.change_fullscreen)
-        self.fullscreen_option_menu.set(self.master.fullscreen)
-        self.fullscreen_option_menu.pack(padx=10, pady=10)
+        fullscreen_label = ctk.CTkLabel(parent, text='Fullscreen:')
+        fullscreen_label.pack(padx=10)
+        fullscreen_option_menu = ctk.CTkOptionMenu(parent, values=['Off', 'On'], command=self.change_fullscreen)
+        fullscreen_option_menu.set(self.master.fullscreen)
+        fullscreen_option_menu.pack(padx=10, pady=10)
 
     def create_password_frame(self):
         password_frame = ctk.CTkFrame(self.main_frame)
@@ -79,28 +81,28 @@ class SettingsFrame(ctk.CTkFrame):
         self.create_password_button(password_frame)
 
     def create_password_entries(self, parent):
-        self.password_label = ctk.CTkLabel(parent, text='New password:')
-        self.password_label.pack(padx=10)
+        password_label = ctk.CTkLabel(parent, text='New password:')
+        password_label.pack(padx=10)
         self.password_entry = ctk.CTkEntry(parent, show='*')
         self.password_entry.pack(padx=10, pady=10)
 
-        self.confirm_password_label = ctk.CTkLabel(parent, text='Confirm password:')
-        self.confirm_password_label.pack(padx=10)
+        confirm_password_label = ctk.CTkLabel(parent, text='Confirm password:')
+        confirm_password_label.pack(padx=10)
         self.confirm_password_entry = ctk.CTkEntry(parent, show='*')
         self.confirm_password_entry.pack(padx=10, pady=10)
 
     def create_password_button(self, parent):
         ctk.CTkLabel(parent, text='').pack()
-        self.change_password_button = ctk.CTkButton(parent, text='Submit', command=self.change_password)
-        self.change_password_button.pack(padx=10, pady=10)
+        change_password_button = ctk.CTkButton(parent, text='Submit', command=self.change_password)
+        change_password_button.pack(padx=10, pady=10)
 
     def create_bottom_frame(self):
         bottom_frame = ctk.CTkFrame(self.main_frame)
         bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
         ctk.CTkLabel(bottom_frame, text='').pack()
-        self.back_button = ctk.CTkButton(bottom_frame, text='Back', command=self.create_user_main_frame)
-        self.back_button.pack(pady=1)
+        back_button = ctk.CTkButton(bottom_frame, text='Back', command=self.create_user_main_frame)
+        back_button.pack(pady=1)
         ctk.CTkLabel(bottom_frame, text='').pack()
 
     def change_fullscreen(self, value):
@@ -122,9 +124,9 @@ class SettingsFrame(ctk.CTkFrame):
             self.master.create_seller_main_frame()
 
     def change_scaling(self, value):
-        self.master.scaling = value
         scale_factor = float(value.strip('%')) / 100
         ctk.set_widget_scaling(scale_factor)
+        self.master.scaling = value
 
     def change_theme(self, value):
         ctk.set_appearance_mode(value.lower())
@@ -132,7 +134,9 @@ class SettingsFrame(ctk.CTkFrame):
 
     def change_password(self):
         if self.password_entry.get() != self.confirm_password_entry.get():
-            self.show_error_dialog('Passwords do not match')
+            self.password_entry.delete(0, 'end')
+            self.confirm_password_entry.delete(0, 'end')
+            show_error_dialog('Passwords do not match')
             return
 
         id = self.master.user.id
@@ -143,17 +147,11 @@ class SettingsFrame(ctk.CTkFrame):
         response = requests.post(url, json=data)
 
         if response.status_code == 200:
-            self.master.after(0, self.show_success_dialog)
+            self.master.after(0, show_success_dialog)
         elif response.status_code == 400:
-            self.master.after(0, self.show_error_dialog, response.json().get('error'))
+            self.master.after(0, show_error_dialog, response.json().get('error'))
         else:
-            self.master.after(0, self.show_error_dialog, 'Password change failed')
-        pass
+            self.master.after(0, show_error_dialog, 'Password change failed')
 
-    def show_success_dialog(self):
-        success = InfoDialog(self, title='Success', message='Password changed successfully')
-        success.show()
-
-    def show_error_dialog(self, message):
-        error = ErrorDialog(self, message=message)
-        error.show()
+        self.password_entry.delete(0, 'end')
+        self.confirm_password_entry.delete(0, 'end')

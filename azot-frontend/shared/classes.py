@@ -1,6 +1,3 @@
-import datetime
-
-
 class Client:
     def __init__(self, client_id, email, password, client_info=None, cart=None, purchases=None):
         self.id = client_id
@@ -77,20 +74,17 @@ class Product:
 
 
 class Purchase:
-    def __init__(self, purchase_id, product_name, quantity, cost, seller=None, client=None):
+    def __init__(self, purchase_id, product_name, quantity, cost, date):
         self.id = purchase_id
         self.product_name = product_name
         self.quantity = quantity
-        self.date = datetime.datetime.now()
+        self.date = date
         self.cost = cost
-        self.seller = seller
-        self.client = client
 
     def __str__(self):
         return (f'Purchase(id={self.id}, product_name={self.product_name}, '
                 f'quantity={self.quantity}, date={self.date}, '
-                f'cost={self.cost}, seller={self.seller}, '
-                f'client={self.client})')
+                f'cost={self.cost})')
 
 
 class Order:
