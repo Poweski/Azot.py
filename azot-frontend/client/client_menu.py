@@ -141,7 +141,7 @@ class MainMenuFrame(ctk.CTkFrame):
 
     def update_product_view(self, product_frame, placeholder_label, product_data, product_id):
         placeholder_label.pack_forget()
-        ctk.CTkLabel(product_frame, text=f'{product_data['name']}').pack()
+        ctk.CTkLabel(product_frame, text=f"{product_data['name']}").pack()
         image_url = product_data['image']
         image_data = urlopen(image_url).read()
         image_pil = Image.open(io.BytesIO(image_data))
@@ -150,8 +150,8 @@ class MainMenuFrame(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
         image_label.pack()
-        ctk.CTkLabel(product_frame, text=f'Price: ${product_data['price']:.2f}').pack(padx=10)
-        ctk.CTkLabel(product_frame, text=f'Items available: {product_data['items_available']}').pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f"Price: ${product_data['price']:.2f}").pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f"Items available: {product_data['items_available']}").pack(padx=10)
         check_command = partial(self.check_product, product_id)
         ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10)
 
@@ -196,7 +196,7 @@ class MainMenuFrame(ctk.CTkFrame):
     def update_product_view3(self, product_frame, placeholder_label, product):
         self.master.viewed_products.append(utils.create_product(product))
         placeholder_label.pack_forget()
-        ctk.CTkLabel(product_frame, text=f'{product['name']}').pack()
+        ctk.CTkLabel(product_frame, text=f"{product['name']}").pack()
         image_url = product['image']
         image_data = urlopen(image_url).read()
         image_pil = Image.open(io.BytesIO(image_data))
@@ -205,8 +205,8 @@ class MainMenuFrame(ctk.CTkFrame):
         image_ctk = ctk.CTkImage(light_image=image_pil_resized, size=new_size)
         image_label = ctk.CTkLabel(product_frame, image=image_ctk, text='')
         image_label.pack()
-        ctk.CTkLabel(product_frame, text=f'Price: ${product['price']:.2f}').pack(padx=10)
-        ctk.CTkLabel(product_frame, text=f'Items available: {product['items_available']}').pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f"Price: ${product['price']:.2f}").pack(padx=10)
+        ctk.CTkLabel(product_frame, text=f"Items available: {product['items_available']}").pack(padx=10)
         check_command = partial(self.check_product, product['id'])
         ctk.CTkButton(product_frame, text='Check', command=check_command, fg_color='red', hover_color='#8B0000').pack(padx=10)
 

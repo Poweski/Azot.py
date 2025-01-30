@@ -103,7 +103,7 @@ class PurchasesView(ctk.CTkFrame):
         formatted_time = date_object.strftime("%H:%M:%S")
 
         total_entry = ctk.CTkEntry(product_frame, justify='center', font=('Helvetica', 14, 'bold'), width=175)
-        total_entry.insert(0, f'{purchase['product']}')
+        total_entry.insert(0, f"{purchase['product']}")
         total_entry.configure(state='disabled')
         total_entry.pack(padx=5, pady=5)
 

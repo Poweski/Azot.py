@@ -66,7 +66,7 @@ class ReviewReadFrame(ctk.CTkFrame):
         review_frame = ctk.CTkFrame(parent)
         review_frame.pack(padx=10, pady=10, fill='x')
 
-        ctk.CTkLabel(review_frame, text=f'Rating: {review['rating']}', font=('Helvetica', 14)).pack(pady=5)
+        ctk.CTkLabel(review_frame, text=f"Rating: {review['rating']}", font=('Helvetica', 14)).pack(pady=5)
         description_textbox = ctk.CTkTextbox(review_frame, wrap='word', font=('Helvetica', 16), width=450, height=130)
         description_textbox.insert('1.0', review['text'])
         description_textbox.configure(state='disabled')
@@ -75,7 +75,7 @@ class ReviewReadFrame(ctk.CTkFrame):
         author = review['client']
 
         if author['name'] and author['surname']:
-            ctk.CTkLabel(review_frame, text=f'By: {author['name'] + ' ' + author['surname']}', font=('Helvetica', 12)).pack(pady=5)
+            ctk.CTkLabel(review_frame, text=f"By: {author['name'] + ' ' + author['surname']}", font=('Helvetica', 12)).pack(pady=5)
         else:
             ctk.CTkLabel(review_frame, text='By: Anonymous', font=('Helvetica', 12)).pack(pady=5)
         return review_frame
